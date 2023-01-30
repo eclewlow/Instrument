@@ -12,5 +12,7 @@ struct InstrumentExtensionMainView: View {
     
     var body: some View {
         ParameterSlider(param: parameterTree.global.gain)
+        ParameterSlider(param: parameterTree.global.attack)
+        ParameterSlider(param: parameterTree.global.detune)
     }
 }

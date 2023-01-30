@@ -14,7 +14,10 @@ namespace InstrumentExtensionParameterAddress {
 #endif
 
 typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
-    gain = 0
+    gain = 0,
+    sendNote = 1,
+    attack=2,
+    detune=3
 };
 
 #ifdef __cplusplus

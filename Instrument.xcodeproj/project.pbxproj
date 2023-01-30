@@ -93,6 +93,10 @@
 		2E00903829817D7C00AC58EB /* ObservableAUParameter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableAUParameter.swift; sourceTree = "<group>"; };
 		2E00903A29817D7C00AC58EB /* AudioUnitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUnitViewController.swift; sourceTree = "<group>"; };
 		2E00903C29817D7C00AC58EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2E00904629818D9A00AC58EB /* SawtoothOscillator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SawtoothOscillator.h; sourceTree = "<group>"; };
+		2E0090AF29832AA900AC58EB /* ADSREnvelope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ADSREnvelope.h; sourceTree = "<group>"; };
+		2E0178EA29849A440095D91E /* Voice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
+		2E0178EB29849A500095D91E /* VoiceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoiceManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,7 +284,11 @@
 			isa = PBXGroup;
 			children = (
 				2E00902B29817D7C00AC58EB /* SinOscillator.h */,
+				2E00904629818D9A00AC58EB /* SawtoothOscillator.h */,
 				2E00902C29817D7C00AC58EB /* InstrumentExtensionDSPKernel.hpp */,
+				2E0090AF29832AA900AC58EB /* ADSREnvelope.h */,
+				2E0178EA29849A440095D91E /* Voice.h */,
+				2E0178EB29849A500095D91E /* VoiceManager.h */,
 			);
 			path = DSP;
 			sourceTree = "<group>";

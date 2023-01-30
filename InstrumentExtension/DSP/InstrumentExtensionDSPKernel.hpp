@@ -14,6 +14,10 @@
 #import <span>
 
 #import "SinOscillator.h"
+#import "SawtoothOscillator.h"
+#import "ADSREnvelope.h"
+#import "Voice.h"
+#import "VoiceManager.h"
 #import "InstrumentExtension-Swift.h"
 #import "InstrumentExtensionParameterAddresses.h"
 
@@ -25,7 +29,7 @@ class InstrumentExtensionDSPKernel {
 public:
     void initialize(int channelCount, double inSampleRate) {
         mSampleRate = inSampleRate;
-        mSinOsc = SinOscillator(inSampleRate);
+        mVoiceManager = VoiceManager(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mDetune, inSampleRate);
     }
     
     void deInitialize() {
@@ -47,6 +51,15 @@ public:
             case InstrumentExtensionParameterAddress::gain:
                 mGain = value;
                 break;
+            case InstrumentExtensionParameterAddress::attack:
+                mVCAAttack = value;
+                mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
+                break;    
+            case InstrumentExtensionParameterAddress::detune:
+                mDetune = value;
+//                mVoice.setDetune(mDetune);
+                mVoiceManager.setDetune(mDetune);
+                break;
         }
     }
     
@@ -56,7 +69,10 @@ public:
         switch (address) {
             case InstrumentExtensionParameterAddress::gain:
                 return (AUValue)mGain;
-                
+            case InstrumentExtensionParameterAddress::attack:
+                return (AUValue) mVCAAttack;
+            case InstrumentExtensionParameterAddress::detune:
+                return (AUValue) mDetune;
             default: return 0.f;
         }
     }
@@ -114,7 +130,10 @@ public:
         // Generate per sample dsp before assigning it to out
         for (UInt32 frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
             // Do your frame by frame dsp here...
-            const auto sample = mSinOsc.process() * mNoteEnvelope * mGain;
+//            const auto sample = mADSREnv.process() * mSawOsc.process() * mNoteEnvelope * mGain;
+            const auto sample = mVoiceManager.process() * mNoteEnvelope * mGain;
+//            const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
+//                        const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
 
             for (UInt32 channel = 0; channel < outputBuffers.size(); ++channel) {
                 outputBuffers[channel][frameIndex] = sample;
@@ -141,6 +160,15 @@ public:
     
     void handleParameterEvent(AUEventSampleTime now, AUParameterEvent const& parameterEvent) {
         // Implement handling incoming Parameter events as needed
+//        mVoice.setDetune(mDetune);
+//        fprintf(
+//          stdout,
+//          "ParameterEvent: parameterIndex=%d time=%.3f value=%.4f\n",
+//                parameterEvent.eventType,parameterEvent.eventSampleTime, parameterEvent.value);
+//                parameterEvent.getIndex(),
+//                parameterEvent.getTime(),
+//                parameterEvent.getValue(),
+//                parameterEvent.getSource()
     }
     
     void handleMIDIEventList(AUEventSampleTime now, AUMIDIEventList const* midiEvent) {
@@ -166,7 +194,8 @@ public:
         
         switch (message.channelVoice2.status) {
             case kMIDICVStatusNoteOff: {
-                mNoteEnvelope = 0.0;
+//                mNoteEnvelope = 0.0;
+                mVoiceManager.noteOff(note.number);
             }
                 break;
                 
@@ -174,13 +203,17 @@ public:
                 const auto velocity = message.channelVoice2.note.velocity;
                 const auto freqHertz   = MIDINoteToFrequency(note.number);
 
-                mSinOsc = SinOscillator(mSampleRate);
-                
-                // Set frequency on per channel oscillator
-                mSinOsc.setFrequency(freqHertz);
+//                mSinOsc = SinOscillator(mSampleRate);
+//                mSawOsc = SawtoothOscillator(mSampleRate);
+//                mADSREnv = ADSREnvelope(mSampleRate);
+                mVoiceManager.noteOn(note.number);
 
+//                mVoice.setFrequency(freqHertz);
+                // Set frequency on per channel oscillator
                 // Use velocity to set amp envelope level
-                mNoteEnvelope = (double)velocity / (double)std::numeric_limits<std::uint16_t>::max();
+//                mNoteEnvelope = (double)velocity / (double)std::numeric_limits<std::uint16_t>::max();
+                mNoteEnvelope = 1.0f;
+                
             }
                 break;
                 
@@ -194,10 +227,17 @@ public:
     
     double mSampleRate = 44100.0;
     double mGain = 1.0;
+    double mAttack = 0.0;
+    double mVCAAttack = 10.0f;
+    double mVCADecay = 0.0f;
+    double mVCASustain = 1.0f;
+    double mVCARelease = 100.0f;
+    int mDetune = 0;
     double mNoteEnvelope = 0.0;
+    double mADSREnvelope = 0.0f;
     
     bool mBypassed = false;
     AUAudioFrameCount mMaxFramesToRender = 1024;
     
-    SinOscillator mSinOsc;
+    VoiceManager mVoiceManager;
 };
