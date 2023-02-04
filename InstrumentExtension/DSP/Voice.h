@@ -42,7 +42,8 @@ public:
     }
     
     double process() {
-        return mADSREnv.process() * (mOsc1.process() + mOsc2.process()) / 2.0f;
+        return mADSREnv.process() * (mOsc1.process() + mOsc2.process());
+//        return mADSREnv.process() * mOsc1.process();
     }
     
     void noteOn(int note) {

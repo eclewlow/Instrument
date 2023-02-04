@@ -46,7 +46,7 @@
 
 - (void)setupAudioBuses {
     // Create the output bus first
-    AVAudioFormat *format = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100 channels:2];
+    AVAudioFormat *format = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100.0 channels:2];
     _outputBus = [[AUAudioUnitBus alloc] initWithFormat:format error:nil];
     _outputBus.maximumChannelCount = 8;
     

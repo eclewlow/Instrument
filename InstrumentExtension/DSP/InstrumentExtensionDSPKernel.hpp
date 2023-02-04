@@ -20,6 +20,7 @@
 #import "VoiceManager.h"
 #import "InstrumentExtension-Swift.h"
 #import "InstrumentExtensionParameterAddresses.h"
+#import "FIRFilter.h"
 
 /*
  InstrumentExtensionDSPKernel
@@ -30,6 +31,7 @@ public:
     void initialize(int channelCount, double inSampleRate) {
         mSampleRate = inSampleRate;
         mVoiceManager = VoiceManager(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mDetune, inSampleRate);
+        FIRFilter_Init(&mFilter);
     }
     
     void deInitialize() {
@@ -55,6 +57,10 @@ public:
                 mVCAAttack = value;
                 mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
                 break;    
+            case InstrumentExtensionParameterAddress::release:
+                mVCARelease = value;
+                mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
+                break;
             case InstrumentExtensionParameterAddress::detune:
                 mDetune = value;
 //                mVoice.setDetune(mDetune);
@@ -71,6 +77,8 @@ public:
                 return (AUValue)mGain;
             case InstrumentExtensionParameterAddress::attack:
                 return (AUValue) mVCAAttack;
+            case InstrumentExtensionParameterAddress::release:
+                return (AUValue) mVCARelease;
             case InstrumentExtensionParameterAddress::detune:
                 return (AUValue) mDetune;
             default: return 0.f;
@@ -131,7 +139,8 @@ public:
         for (UInt32 frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
             // Do your frame by frame dsp here...
 //            const auto sample = mADSREnv.process() * mSawOsc.process() * mNoteEnvelope * mGain;
-            const auto sample = mVoiceManager.process() * mNoteEnvelope * mGain;
+            const double sample = mVoiceManager.process();// * mNoteEnvelope * mGain;
+//            FIRFilter_Update(&mFilter, sample);
 //            const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
 //                        const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
 
@@ -240,4 +249,5 @@ public:
     AUAudioFrameCount mMaxFramesToRender = 1024;
     
     VoiceManager mVoiceManager;
+    FIRFilter mFilter;
 };

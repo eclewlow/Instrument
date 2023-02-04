@@ -33,6 +33,9 @@
 		2E00903729817D7C00AC58EB /* AudioUnitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E00903529817D7C00AC58EB /* AudioUnitViewController.xib */; };
 		2E00903929817D7C00AC58EB /* ObservableAUParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903829817D7C00AC58EB /* ObservableAUParameter.swift */; };
 		2E00903B29817D7C00AC58EB /* AudioUnitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903A29817D7C00AC58EB /* AudioUnitViewController.swift */; };
+		2E771A582989B11E006E5328 /* ParameterKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E771A562989B11E006E5328 /* ParameterKnob.swift */; };
+		2E771A5A2989B23C006E5328 /* KnobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E771A592989B23C006E5328 /* KnobView.swift */; };
+		2E771A5B2989BB7F006E5328 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E00900729817D7C00AC58EB /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,7 +75,7 @@
 		2E00900029817D7A00AC58EB /* AudioUnitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUnitViewModel.swift; sourceTree = "<group>"; };
 		2E00900229817D7A00AC58EB /* InstrumentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentApp.swift; sourceTree = "<group>"; };
 		2E00900529817D7A00AC58EB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2E00900729817D7C00AC58EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2E00900729817D7C00AC58EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Instrument/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		2E00900929817D7C00AC58EB /* Instrument.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Instrument.entitlements; sourceTree = "<group>"; };
 		2E00900E29817D7C00AC58EB /* InstrumentExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = InstrumentExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E00901329817D7C00AC58EB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -97,6 +100,9 @@
 		2E0090AF29832AA900AC58EB /* ADSREnvelope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ADSREnvelope.h; sourceTree = "<group>"; };
 		2E0178EA29849A440095D91E /* Voice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
 		2E0178EB29849A500095D91E /* VoiceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoiceManager.h; sourceTree = "<group>"; };
+		2E771A562989B11E006E5328 /* ParameterKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterKnob.swift; sourceTree = "<group>"; };
+		2E771A592989B23C006E5328 /* KnobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnobView.swift; sourceTree = "<group>"; };
+		2E771A5E298C7F9C006E5328 /* FIRFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIRFilter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,6 +295,7 @@
 				2E0090AF29832AA900AC58EB /* ADSREnvelope.h */,
 				2E0178EA29849A440095D91E /* Voice.h */,
 				2E0178EB29849A500095D91E /* VoiceManager.h */,
+				2E771A5E298C7F9C006E5328 /* FIRFilter.h */,
 			);
 			path = DSP;
 			sourceTree = "<group>";
@@ -296,8 +303,10 @@
 		2E00902E29817D7C00AC58EB /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				2E771A592989B23C006E5328 /* KnobView.swift */,
 				2E00902F29817D7C00AC58EB /* InstrumentExtensionMainView.swift */,
 				2E00903129817D7C00AC58EB /* ParameterSlider.swift */,
+				2E771A562989B11E006E5328 /* ParameterKnob.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -415,6 +424,7 @@
 				2E00903729817D7C00AC58EB /* AudioUnitViewController.xib in Resources */,
 				2E00902529817D7C00AC58EB /* InstrumentExtensionAUProcessHelper.hpp in Resources */,
 				2E00902D29817D7C00AC58EB /* InstrumentExtensionDSPKernel.hpp in Resources */,
+				2E771A5B2989BB7F006E5328 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,12 +452,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E00903029817D7C00AC58EB /* InstrumentExtensionMainView.swift in Sources */,
+				2E771A5A2989B23C006E5328 /* KnobView.swift in Sources */,
 				2E00902929817D7C00AC58EB /* Parameters.swift in Sources */,
 				2E00903929817D7C00AC58EB /* ObservableAUParameter.swift in Sources */,
 				2E00901929817D7C00AC58EB /* ParameterSpecBase.swift in Sources */,
 				2E00901C29817D7C00AC58EB /* CrossPlatform.swift in Sources */,
 				2E00903B29817D7C00AC58EB /* AudioUnitViewController.swift in Sources */,
 				2E00903229817D7C00AC58EB /* ParameterSlider.swift in Sources */,
+				2E771A582989B11E006E5328 /* ParameterKnob.swift in Sources */,
 				2E00901E29817D7C00AC58EB /* String+Utils.swift in Sources */,
 				2E00902229817D7C00AC58EB /* InstrumentExtensionAudioUnit.mm in Sources */,
 			);
@@ -532,6 +544,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 			};
 			name = Debug;
 		};
@@ -585,6 +598,7 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 			};
 			name = Release;
 		};
@@ -684,6 +698,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.eugeneclewlow.plugintest.Instrument;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -722,6 +737,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.eugeneclewlow.plugintest.Instrument;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

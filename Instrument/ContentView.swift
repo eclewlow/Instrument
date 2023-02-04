@@ -48,7 +48,7 @@ struct ContentView: View {
             }
             Spacer()
                 .frame(height: margin)
-        }
+        }.background(Image("Ravness"),alignment: .topLeading)
     }
 }
 

@@ -31,7 +31,15 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             identifier: "attack",
             name: "Attack",
             units: .milliseconds,
-            valueRange: 0.0...1000.0,
+            valueRange: 8.0...1000.0,
+            defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .release,
+            identifier: "release",
+            name: "Release",
+            units: .milliseconds,
+            valueRange: 8.0...1000.0,
             defaultValue: 100.0
         )
     }
