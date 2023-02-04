@@ -27,6 +27,8 @@ struct InstrumentExtensionMainView: View {
                     KnobView(param: parameterTree.global.attack)
                     KnobView(param: parameterTree.global.release)
                     KnobView(param: parameterTree.global.detune)
+                    KnobView(param: parameterTree.global.cutoff)
+                    KnobView(param: parameterTree.global.resonance)
                 }
             }
         }

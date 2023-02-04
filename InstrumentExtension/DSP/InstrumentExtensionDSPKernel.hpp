@@ -30,7 +30,7 @@ class InstrumentExtensionDSPKernel {
 public:
     void initialize(int channelCount, double inSampleRate) {
         mSampleRate = inSampleRate;
-        mVoiceManager = VoiceManager(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mDetune, inSampleRate);
+        mVoiceManager = VoiceManager(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mDetune, mCutoff, mResonance, inSampleRate);
         FIRFilter_Init(&mFilter);
     }
     
@@ -61,6 +61,14 @@ public:
                 mVCARelease = value;
                 mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
                 break;
+            case InstrumentExtensionParameterAddress::cutoff:
+                mCutoff = value;
+                mVoiceManager.setCutoffResonance(mCutoff, mResonance);
+                break;
+            case InstrumentExtensionParameterAddress::resonance:
+                mResonance = value;
+                mVoiceManager.setCutoffResonance(mCutoff, mResonance);
+                break;
             case InstrumentExtensionParameterAddress::detune:
                 mDetune = value;
 //                mVoice.setDetune(mDetune);
@@ -81,6 +89,10 @@ public:
                 return (AUValue) mVCARelease;
             case InstrumentExtensionParameterAddress::detune:
                 return (AUValue) mDetune;
+            case InstrumentExtensionParameterAddress::cutoff:
+                return (AUValue) mCutoff;
+            case InstrumentExtensionParameterAddress::resonance:
+                return (AUValue) mResonance;
             default: return 0.f;
         }
     }
@@ -244,6 +256,8 @@ public:
     int mDetune = 0;
     double mNoteEnvelope = 0.0;
     double mADSREnvelope = 0.0f;
+    double mCutoff=0;
+    double mResonance=0;
     
     bool mBypassed = false;
     AUAudioFrameCount mMaxFramesToRender = 1024;

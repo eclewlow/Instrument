@@ -18,7 +18,9 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     sendNote = 1,
     attack=2,
     release=3,
-    detune=4
+    detune=4,
+    cutoff=5,
+    resonance=6
 };
 
 #ifdef __cplusplus

@@ -12,14 +12,16 @@
 #import "SinOscillator.h"
 #import "SawtoothOscillator.h"
 #import "ADSREnvelope.h"
+#import "ResonantFilter.h"
 
 class Voice {
 public:
-    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents = 0, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, mSampleRate) {
+    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mResonantFilter(cutoff, resonance, sampleRate) {
         mSampleRate = sampleRate;
         mOsc1 =SawtoothOscillator(mSampleRate);
         mOsc2 =SawtoothOscillator(mSampleRate);
         mADSREnv = ADSREnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, mSampleRate);
+        mResonantFilter = ResonantFilter(cutoff, resonance);
         mOsc2DetuneCents = osc2DetuneCents;
     }
 
@@ -42,7 +44,7 @@ public:
     }
     
     double process() {
-        return mADSREnv.process() * (mOsc1.process() + mOsc2.process());
+        return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
 //        return mADSREnv.process() * mOsc1.process();
     }
     
@@ -56,7 +58,7 @@ public:
     }
     
     void noteOff(int note) {
-        mNote = -1;
+//        mNote = -1;
         mADSREnv.noteOff();
     }
     
@@ -78,6 +80,10 @@ public:
         mADSREnv.setEnvelope( attack,  decay,  sustain,  release);
     }
     
+    void setCutoffResonance(double cutoff, double resonance) {
+        mResonantFilter.setCutoffResonance(cutoff, resonance);
+    }
+    
 private:
     double mOmega = { 0.0 };
     double mDeltaOmega = { 0.0 };
@@ -89,4 +95,5 @@ private:
     SawtoothOscillator mOsc1;
     SawtoothOscillator mOsc2;
     ADSREnvelope mADSREnv;
+    ResonantFilter mResonantFilter;
 };

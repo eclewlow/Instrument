@@ -9,9 +9,7 @@
 
 #include <numbers>
 #include <cmath>
-#include <iostream>
 
-using namespace std;
 
 class ADSREnvelope {
 public:

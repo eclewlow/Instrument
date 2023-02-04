@@ -26,13 +26,15 @@ public:
     VoiceManager() {
         
     }
-    VoiceManager(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents = 0, double sampleRate = 44100.0) {
+    VoiceManager(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, double cutoff, double resonance, double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
         mOsc2DetuneCents = osc2DetuneCents;
         mVCAAttack = vcaAttack;
         mVCADecay = vcaDecay;
         mVCASustain = vcaSustain;
         mVCARelease = vcaRelease;
+        mCutoff = cutoff;
+        mResonance = resonance;
 //        mVoiceList.push_back(Voice(sampleRate));
     }
     
@@ -61,7 +63,17 @@ public:
          mVCASustain = sustain;
          mVCARelease = release;
     }
-    
+
+    void setCutoffResonance(double cutoff, double resonance) {
+        std::list<Voice>::iterator it;
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).setCutoffResonance(cutoff, resonance);
+        }
+        
+        mCutoff = cutoff;
+        mResonance = resonance;
+    }
+
     void setDetune(int detuneCents) {
         std::list<Voice>::iterator it;
         mOsc2DetuneCents = detuneCents;
@@ -102,6 +114,7 @@ public:
         int i = 0;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
             if((*it).getNote() == note) {
+//                (*it).noteOff(note);
                 (*it).noteOn(note);
                 foundNoteIndex = i;
                 break;
@@ -125,16 +138,16 @@ public:
 //                mVoiceList.push_back(v);
 //                // if we've run out of voices.  Get the oldest voice and set it's frequency rather than start the envelope generator over
 //            } else {
-                Voice v = Voice(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mOsc2DetuneCents, mSampleRate);
+                Voice v = Voice(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mOsc2DetuneCents, mCutoff, mResonance, mSampleRate);
                 v.noteOn(note);
                 mVoiceList.push_back(v);
 //            }
         } else {
-            Voice v = *it;
+//            Voice v = *it;
 //            mVoiceList.remove(v);
-            mVoiceList.erase(it);
-            v.noteOn(note);
-            mVoiceList.push_back(v);
+//            mVoiceList.erase(it);
+//            v.noteOn(note);
+//            mVoiceList.push_back(v);
         }
     }
     
@@ -163,4 +176,6 @@ private:
     double mVCADecay = 0.0f;
     double mVCASustain = 1.0f;
     double mVCARelease = 100.0f;
+    double mCutoff = 0;
+    double mResonance = 0;
 };

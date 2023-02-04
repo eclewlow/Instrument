@@ -41,6 +41,22 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             units: .milliseconds,
             valueRange: 8.0...1000.0,
             defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .cutoff,
+            identifier: "cutoff",
+            name: "Cutoff",
+            units: .hertz,
+            valueRange: 12.0...20_000.0,
+            defaultValue: 20_000.0
+        );
+        ParameterSpec(
+            address: .resonance,
+            identifier: "resonance",
+            name: "Resonance",
+            units: .decibels,
+            valueRange: -20...20,
+            defaultValue: 0.0
         )
     }
 }
