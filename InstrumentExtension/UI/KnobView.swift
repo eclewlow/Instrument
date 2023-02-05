@@ -10,19 +10,24 @@ func clamp(value:Double, low: Double, high: Double) -> Double {
 struct KnobView: View {
     @ObservedObject var param: ObservableAUParameter
     
+    enum Scale {
+        case logarithmic, linear
+    }
+    
     var bounds: ClosedRange<AUValue> = 0...1
     var range: Double = 0
     var lowerBound: Double = 0
     var upperBound: Double = 0
     
-    var minpos: Double;
-    var maxpos: Double;
+    var minpos: Double = -135.0
+    var maxpos: Double = 135.0
 
-    var minlval: Double;
-    var maxlval: Double;
+    var minlval: Double = 0.0
+    var maxlval: Double = 1000.0
 
-    var scale: Double;
+    var logscale: Double = 100.0
     
+    var scale: Scale
     
     @State private var rotation: Double = 0.0
     @State private var startRotation: Double = 0.0
@@ -30,9 +35,11 @@ struct KnobView: View {
     @State var value : Double = 0.0
     @State private var startDragValue : Double = -1.0
     
-    init(param: ObservableAUParameter) {
+    init(param: ObservableAUParameter, scale: Scale=Scale.linear) {
         self.param = param
 //            self.bounds = bounds!
+        self.scale = scale
+
         self.bounds = param.min...param.max
         self.range = Double(param.max - param.min)
     
@@ -42,13 +49,30 @@ struct KnobView: View {
         self.minpos = -135;
         self.maxpos = 135;
 //
-        self.minlval = log(self.lowerBound);
-        self.maxlval = log(self.upperBound);
-//
-        self.scale = (self.maxlval - self.minlval) / (self.maxpos - self.minpos);
-        
-        self.rotation = valueToRotation(value: Double(param.value))
 
+        if scale == Scale.logarithmic {
+            self.minlval = log(self.lowerBound);
+            self.maxlval = log(self.upperBound);
+        } else {
+            self.minlval = 0
+            self.maxlval = 0
+        }
+//                self.minlval = 2.99573227355;
+//                self.maxlval = 9.90348755254;
+
+        //
+        self.logscale = (self.maxlval - self.minlval) / (self.maxpos - self.minpos);
+
+//
+//        self.minlval = 2.99573227355;
+//        self.maxlval = 9.90348755254;
+////
+//        self.scale = (9.90348755254 - 2.99573227355) / (270);
+        
+//        var test1:Double = minpos + (log(value) - self.minlval) / self.scale
+//        self.rotation = valueToRotation(value: Double(param.value))
+
+//        self.rotation = test1
 //        // Calculate value from a slider position
 //        value: function(position) {
 //           return Math.exp((position - this.minpos) * this.scale + this.minlval);
@@ -61,12 +85,24 @@ struct KnobView: View {
     
     func valueToRotation(value:Double) -> Double{
 //    return Double(-135.0 + 270.0 * (value - lowerBound) / range)
-        return clamp(value: minpos + (log(value) - self.minlval) / self.scale, low: minpos, high: maxpos)
+        if self.scale == Scale.linear {
+            return Double(-135.0 + 270.0 * (value - lowerBound) / range)
+        } else if self.scale == Scale.logarithmic {
+                return clamp(value: minpos + (log(value) - minlval) / logscale, low: minpos, high: maxpos)
+        } else {
+            return 0;
+        }
+        
     }
     
     func rotationToValue(rotation:Double) -> Double{
-//        return lowerBound + range * (rotation + 135.0) / 270.0
-        return clamp(value: exp((rotation - minpos) * scale + minlval), low: lowerBound, high: upperBound)
+        if self.scale == Scale.linear {
+            return lowerBound + range * (rotation + 135.0) / 270.0
+        } else if self.scale == Scale.logarithmic {
+                return clamp(value: exp((rotation - minpos) * logscale + minlval), low: lowerBound, high: upperBound)
+        } else {
+            return 0;
+        }
     }
 
     var specifier: String {
