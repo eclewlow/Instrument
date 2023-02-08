@@ -1,165 +1,189 @@
+// Copyright © 2021 Brad Howes. All rights reserved.
+
+#if os(macOS)
+
 import SwiftUI
-import Swift
-import Foundation
-import AudioToolbox
+import AppKit
 
-func clamp(value:Double, low: Double, high: Double) -> Double {
-    return min(max(value, low), high)
-}
+/**
+ Wrapper for a Knob control that allows it to reside in and take part in a SwiftUI view definition.
+ */
+@available(iOS 13, macOS 10.15, *)
+public struct KnobView: NSViewRepresentable {
 
-struct KnobView: View {
     @ObservedObject var param: ObservableAUParameter
-    
-    enum Scale {
-        case logarithmic, linear
+  /// The current value of the Knob
+  @Binding private var value: Float
+  /// Signal that the knob is being manipulated
+  @Binding private var manipulating: Bool
+
+  private var minimumValue: Float
+  private var maximumValue: Float
+  private var touchSensitivity: CGFloat = 1.0
+  private var maxChangeRegionWidthPercentage: CGFloat = 0.1
+
+  private var trackWidthFactor: CGFloat = 0.08
+  private var trackColor: Color = Color(red: 0.25, green: 0.25, blue: 0.25)
+
+  private var progressWidthFactor: CGFloat = 0.055
+  private var progressColor: Color = Color(red: 1.0, green: 0.575, blue: 0.0)
+
+  private var indicatorWidthFactor: CGFloat = 0.055
+  private var indicatorColor: Color = Color(red: 1.0, green: 0.575, blue: 0.0)
+  private var indicatorLineLength: CGFloat = 0.3
+
+  private var tickCount: Int = 0
+  private var tickLineOffset: CGFloat = 0.1
+  private var tickLineLength: CGFloat = 0.2
+  private var tickLineWidth: CGFloat = 1.0
+  private var tickColor: Color = .black
+
+    init(param: ObservableAUParameter, value: Binding<Float>, manipulating: Binding<Bool>) {
+//      public init(value: Binding<Float>, minimum: Float = 0.0, maximum: Float = 1.0) {
+      self.param = param
+      self._value = value
+//    self._manipulating = manipulating
+      self.minimumValue = 0//param.min
+        self.maximumValue = 1.0///param.max
+//      self.value = param.value
+      self._manipulating = manipulating
+  }
+
+  /**
+   Create a new Knob control to be managed in SwiftUI.
+
+   - parameter context: the context where the control will live
+   - returns: the new Knob control
+   */
+  public func makeNSView(context: Context) -> Knob { makeView(context: context) }
+
+  /**
+   Update the Knob to show changes in the value binding.
+
+   - parameter uiView: the Knob to update
+   - parameter context: the context where the control lives
+   */
+  public func updateNSView(_ view: Knob, context: Context) { updateView(view, context: context) }
+
+  func makeView(context: Context) -> Knob {
+    let knob = Knob()
+    context.coordinator.monitor(knob)
+    updateView(knob, context: context)
+    return knob
+  }
+
+  func updateView(_ view: Knob, context: Context) {
+      view.value = param.value
+
+    view.minimumValue = minimumValue
+    view.maximumValue = maximumValue
+
+    view.touchSensitivity = touchSensitivity
+    view.maxChangeRegionWidthPercentage = maxChangeRegionWidthPercentage
+
+    view.trackWidthFactor = trackWidthFactor
+    view.progressWidthFactor = progressWidthFactor
+
+    view.indicatorWidthFactor = indicatorWidthFactor
+    view.indicatorLineLength = indicatorLineLength
+
+    view.tickCount = tickCount
+    view.tickLineOffset = tickLineOffset
+    view.tickLineLength = tickLineLength
+    view.tickLineWidth = tickLineWidth
+
+    if #available(iOS 14, macOS 11, *) {
+      view.trackColor = NSColor(trackColor)
+      view.progressColor = NSColor(progressColor)
+      view.indicatorColor = NSColor(indicatorColor)
+      view.tickColor = NSColor(tickColor)
     }
-    
-    var bounds: ClosedRange<AUValue> = 0...1
-    var range: Double = 0
-    var lowerBound: Double = 0
-    var upperBound: Double = 0
-    
-    var minpos: Double = -135.0
-    var maxpos: Double = 135.0
+  }
 
-    var minlval: Double = 0.0
-    var maxlval: Double = 1000.0
+  /**
+   Create a new coordinator that will monitor the Knob value changes.
 
-    var logscale: Double = 100.0
-    
-    var scale: Scale
-    
-    @State private var rotation: Double = 0.0
-    @State private var startRotation: Double = 0.0
-    
-    @State var value : Double = 0.0
-    @State private var startDragValue : Double = -1.0
-    
-    init(param: ObservableAUParameter, scale: Scale=Scale.linear) {
-        self.param = param
-//            self.bounds = bounds!
-        self.scale = scale
+   - returns: new Coordinator
+   */
+  public func makeCoordinator() -> KnobView.Coordinator { Coordinator(self) }
 
-        self.bounds = param.min...param.max
-        self.range = Double(param.max - param.min)
-    
-        self.upperBound = Double(param.max)
-        self.lowerBound = Double(param.min)
-                
-        self.minpos = -135;
-        self.maxpos = 135;
-//
+  /**
+   Coordinator allows us to monitor valueChanged actions from a Knob and forward the values to the binding in the
+   KnobView
+   */
+  public class Coordinator: NSObject {
+    private var knobView: KnobView
 
-        if scale == Scale.logarithmic {
-            self.minlval = log(self.lowerBound);
-            self.maxlval = log(self.upperBound);
-        } else {
-            self.minlval = 0
-            self.maxlval = 0
-        }
-//                self.minlval = 2.99573227355;
-//                self.maxlval = 9.90348755254;
+    public init(_ knobView: KnobView) { self.knobView = knobView }
 
-        //
-        self.logscale = (self.maxlval - self.minlval) / (self.maxpos - self.minpos);
-
-//
-//        self.minlval = 2.99573227355;
-//        self.maxlval = 9.90348755254;
-////
-//        self.scale = (9.90348755254 - 2.99573227355) / (270);
-        
-//        var test1:Double = minpos + (log(value) - self.minlval) / self.scale
-//        self.rotation = valueToRotation(value: Double(param.value))
-
-//        self.rotation = test1
-//        // Calculate value from a slider position
-//        value: function(position) {
-//           return Math.exp((position - this.minpos) * this.scale + this.minlval);
-//        },
-//        // Calculate slider position from a value
-//        position: function(value) {
-//           return this.minpos + (Math.log(value) - this.minlval) / this.scale;
-//        }
-        }
-    
-    func valueToRotation(value:Double) -> Double{
-//    return Double(-135.0 + 270.0 * (value - lowerBound) / range)
-        if self.scale == Scale.linear {
-            return Double(-135.0 + 270.0 * (value - lowerBound) / range)
-        } else if self.scale == Scale.logarithmic {
-                return clamp(value: minpos + (log(value) - minlval) / logscale, low: minpos, high: maxpos)
-        } else {
-            return 0;
-        }
-        
-    }
-    
-    func rotationToValue(rotation:Double) -> Double{
-        if self.scale == Scale.linear {
-            return lowerBound + range * (rotation + 135.0) / 270.0
-        } else if self.scale == Scale.logarithmic {
-                return clamp(value: exp((rotation - minpos) * logscale + minlval), low: lowerBound, high: upperBound)
-        } else {
-            return 0;
-        }
+    func monitor(_ knob: Knob) {
+      knob.target = self
+      knob.action = #selector(valueChanged(_:))
     }
 
-    var specifier: String {
-        switch param.unit {
-        case .midiNoteNumber:
-            return "%.0f"
-        default:
-            return "%.2f"
-        }
+    @objc func valueChanged(_ sender: Knob) {
+        knobView.param.value = sender.value
+      knobView.value = sender.value
+      knobView.manipulating = sender.manipulating
+        knobView.param.onEditingChanged(true)
     }
-    var body: some View {
-        return VStack {
-            Knob()
-                .rotationEffect(.degrees(valueToRotation(value: Double(param.value))))
-    //            .gesture(
-    //                RotationGesture()
-    //                    .onChanged({ angle in
-    //                        if startRotation == 0 {
-    //                            startRotation = rotation
-    //                        }
-    //                        rotation = startRotation + angle.degrees
-    //                    })
-    //                    .onEnded({ _ in
-    //                        startRotation = 0
-    //                    })
-    //            )
-                .gesture(DragGesture(minimumDistance: 0)
-                    .onEnded({ _ in
-                        startDragValue = -1
-    //                    startRotation = 0
-                        param.onEditingChanged(false)
-                    })
-                    .onChanged { dragValue in
-                        print("called")
-                        let diff =  dragValue.startLocation.y - dragValue.location.y
-                        if startDragValue == -1 {
-                            startDragValue = valueToRotation(value: Double(param.value))
-                        }
-                        let newValue = startDragValue + Double(diff)
-                        rotation = newValue < -135 ? -135 : newValue > 135 ? 135 : newValue
-                        
-                        param.value = AUValue(rotationToValue(rotation: rotation))
-                        param.onEditingChanged(true)
-                    })
-            Text("\(param.displayName): \(param.value, specifier: specifier)")
-        }
-        
-    }
+  }
 }
 
-// convience Knob to checkout this Stack Overflow answer
-// that can be later replaced with your own
-struct Knob: View {
-    var body: some View {
-        VStack{
-            Image("knob3").resizable().scaledToFit()
-        }
-    }
+@available(iOS 13, macOS 10.15, *)
+public extension KnobView {
+
+  func touchSensitivity(_ value: CGFloat) -> KnobView {
+    var view = self
+    view.touchSensitivity = value
+    return view
+  }
+
+  func maxChangeRegionWidthPercentage(_ value: CGFloat) -> KnobView {
+    var view = self
+    view.maxChangeRegionWidthPercentage = value
+    return view
+  }
+
+  func trackStyle(widthFactor: CGFloat, color: Color) -> KnobView {
+    var view = self
+    view.trackWidthFactor = widthFactor
+    view.trackColor = color
+    return view
+  }
+
+  func progressStyle(widthFactor: CGFloat, color: Color) -> KnobView {
+    var view = self
+    view.progressWidthFactor = widthFactor
+    view.progressColor = color
+    return view
+  }
+
+  func indicatorStyle(length: CGFloat) -> KnobView {
+    var view = self
+    view.indicatorWidthFactor = indicatorWidthFactor
+    view.indicatorColor = progressColor
+    view.indicatorLineLength = length
+    return view
+  }
+
+  func indicatorStyle(widthFactor: CGFloat, color: Color, length: CGFloat) -> KnobView {
+    var view = self
+    view.indicatorWidthFactor = widthFactor
+    view.indicatorColor = color
+    view.indicatorLineLength = length
+    return view
+  }
+
+  func tickStyle(count: Int, offset: CGFloat, length: CGFloat, width: CGFloat, color: Color) -> KnobView {
+    var view = self
+    view.tickCount = count
+    view.tickLineOffset = offset
+    view.tickLineLength = length
+    view.tickLineWidth = width
+    view.tickColor = color
+    return view
+  }
 }
 
+#endif

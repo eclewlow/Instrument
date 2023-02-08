@@ -33,8 +33,13 @@
 		2E00903729817D7C00AC58EB /* AudioUnitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E00903529817D7C00AC58EB /* AudioUnitViewController.xib */; };
 		2E00903929817D7C00AC58EB /* ObservableAUParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903829817D7C00AC58EB /* ObservableAUParameter.swift */; };
 		2E00903B29817D7C00AC58EB /* AudioUnitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903A29817D7C00AC58EB /* AudioUnitViewController.swift */; };
+		2E46C040299329BD00014B67 /* Knob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C03D299329BD00014B67 /* Knob.swift */; };
+		2E46C041299329BD00014B67 /* KnobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C03E299329BD00014B67 /* KnobView.swift */; };
+		2E46C04429932ADB00014B67 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C04329932ADB00014B67 /* Color.swift */; };
+		2E46C04529932ADB00014B67 /* NSBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C04229932ADB00014B67 /* NSBezierPath.swift */; };
+		2E46C0472993603900014B67 /* MyKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C0462993603900014B67 /* MyKnob.swift */; };
 		2E771A582989B11E006E5328 /* ParameterKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E771A562989B11E006E5328 /* ParameterKnob.swift */; };
-		2E771A5A2989B23C006E5328 /* KnobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E771A592989B23C006E5328 /* KnobView.swift */; };
+		2E771A5A2989B23C006E5328 /* KnobView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E771A592989B23C006E5328 /* KnobView2.swift */; };
 		2E771A5B2989BB7F006E5328 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E00900729817D7C00AC58EB /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -101,8 +106,13 @@
 		2E0178EA29849A440095D91E /* Voice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
 		2E0178EB29849A500095D91E /* VoiceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoiceManager.h; sourceTree = "<group>"; };
 		2E46C020298F2C7E00014B67 /* ResonantFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResonantFilter.h; sourceTree = "<group>"; };
+		2E46C03D299329BD00014B67 /* Knob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Knob.swift; sourceTree = "<group>"; };
+		2E46C03E299329BD00014B67 /* KnobView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KnobView.swift; sourceTree = "<group>"; };
+		2E46C04229932ADB00014B67 /* NSBezierPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSBezierPath.swift; sourceTree = "<group>"; };
+		2E46C04329932ADB00014B67 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		2E46C0462993603900014B67 /* MyKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyKnob.swift; sourceTree = "<group>"; };
 		2E771A562989B11E006E5328 /* ParameterKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterKnob.swift; sourceTree = "<group>"; };
-		2E771A592989B23C006E5328 /* KnobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnobView.swift; sourceTree = "<group>"; };
+		2E771A592989B23C006E5328 /* KnobView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnobView2.swift; sourceTree = "<group>"; };
 		2E771A5E298C7F9C006E5328 /* FIRFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FIRFilter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -127,6 +137,7 @@
 		2E008FDE29817D7A00AC58EB = {
 			isa = PBXGroup;
 			children = (
+				2E46C0262993263B00014B67 /* Packages */,
 				2E008FE929817D7A00AC58EB /* Instrument */,
 				2E00901229817D7C00AC58EB /* InstrumentExtension */,
 				2E008FE829817D7A00AC58EB /* Products */,
@@ -305,10 +316,15 @@
 		2E00902E29817D7C00AC58EB /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				2E771A592989B23C006E5328 /* KnobView.swift */,
+				2E46C04329932ADB00014B67 /* Color.swift */,
+				2E46C04229932ADB00014B67 /* NSBezierPath.swift */,
+				2E46C03D299329BD00014B67 /* Knob.swift */,
+				2E46C03E299329BD00014B67 /* KnobView.swift */,
+				2E771A592989B23C006E5328 /* KnobView2.swift */,
 				2E00902F29817D7C00AC58EB /* InstrumentExtensionMainView.swift */,
 				2E00903129817D7C00AC58EB /* ParameterSlider.swift */,
 				2E771A562989B11E006E5328 /* ParameterKnob.swift */,
+				2E46C0462993603900014B67 /* MyKnob.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -329,6 +345,13 @@
 				2E00903529817D7C00AC58EB /* AudioUnitViewController.xib */,
 			);
 			path = Base.lproj;
+			sourceTree = "<group>";
+		};
+		2E46C0262993263B00014B67 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -454,12 +477,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E00903029817D7C00AC58EB /* InstrumentExtensionMainView.swift in Sources */,
-				2E771A5A2989B23C006E5328 /* KnobView.swift in Sources */,
+				2E771A5A2989B23C006E5328 /* KnobView2.swift in Sources */,
 				2E00902929817D7C00AC58EB /* Parameters.swift in Sources */,
+				2E46C041299329BD00014B67 /* KnobView.swift in Sources */,
 				2E00903929817D7C00AC58EB /* ObservableAUParameter.swift in Sources */,
 				2E00901929817D7C00AC58EB /* ParameterSpecBase.swift in Sources */,
 				2E00901C29817D7C00AC58EB /* CrossPlatform.swift in Sources */,
+				2E46C0472993603900014B67 /* MyKnob.swift in Sources */,
+				2E46C04529932ADB00014B67 /* NSBezierPath.swift in Sources */,
 				2E00903B29817D7C00AC58EB /* AudioUnitViewController.swift in Sources */,
+				2E46C040299329BD00014B67 /* Knob.swift in Sources */,
+				2E46C04429932ADB00014B67 /* Color.swift in Sources */,
 				2E00903229817D7C00AC58EB /* ParameterSlider.swift in Sources */,
 				2E771A582989B11E006E5328 /* ParameterKnob.swift in Sources */,
 				2E00901E29817D7C00AC58EB /* String+Utils.swift in Sources */,
