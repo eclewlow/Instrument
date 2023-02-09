@@ -40,54 +40,6 @@ public:
         return sample;
     }
     // This function calculates the PolyBLEPs
-    
-//    double t = 0.; // 0 <= t < 1
-//    double dt = freq / sample_rate;
-//
-//    ...
-//
-//    double poly_blep(double t, double dt)
-//    {
-//      // 0 <= t < 1
-//      if (t < dt)
-//      {
-//        t /= dt;
-//        // 2 * (t - t^2/2 - 0.5)
-//        return t+t - t*t - 1.;
-//      }
-//
-//      // -1 < t < 0
-//      else if (t > 1. - dt)
-//      {
-//        t = (t - 1.) / dt;
-//        // 2 * (t^2/2 + t + 0.5)
-//        return t*t + t+t + 1.;
-//      }
-//
-//      // 0 otherwise
-//      else
-//      {
-//        return 0.;
-//      }
-//    }
-//
-//    double poly_saw(double t, double dt)
-//    {
-//      // Correct phase, so it would be in line with sin(2.*M_PI * t)
-//      t += 0.5;
-//      if (t >= 1.) t -= 1.;
-//
-//      double naive_saw = 2.*t - 1.;
-//      return naive_saw - poly_blep(t, dt);
-//    }
-//
-//    ...
-//
-//    for (int i = 0; i < nFrames; ++i)
-//    {
-//      output[i] = poly_saw(t, dt);
-//      t += dt;
-//    }
     double poly_blep(double t)
     {
       double dt = mDeltaOmega;

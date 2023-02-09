@@ -16,23 +16,32 @@
 
 class Voice {
 public:
-    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mResonantFilter(cutoff, resonance, sampleRate) {
+    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, uint8 pitchBend, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mResonantFilter(cutoff, resonance, sampleRate) {
         mSampleRate = sampleRate;
         mOsc1 =SawtoothOscillator(mSampleRate);
         mOsc2 =SawtoothOscillator(mSampleRate);
         mADSREnv = ADSREnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, mSampleRate);
         mResonantFilter = ResonantFilter(cutoff, resonance);
         mOsc2DetuneCents = osc2DetuneCents;
+        mPitchBend = pitchBend;
     }
 
-    inline double MIDINoteToFrequency(int note) {
+    inline double Oscillator2MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        return (kMiddleA / 32.0) * pow(2, ((note - 9) / 12.0));
+        double detune = mOsc2DetuneCents/100.0f;
+        double pitchBend = (mPitchBend - 0x40) * 12.0 / 0x40;
+        // pitch bend is 0x00 -> 0x40 -> 0x7F
+        // this allows for 64 values below middle
+        // and allows for 63 values above middle,
+        // including the middle this totals to 128 possible values
+        return (kMiddleA / 32.0) * pow(2, (((note+detune+pitchBend) - 9.0) / 12.0));
     }
 
-    inline double MIDINoteDoubleToFrequency(double note, double detune=0.0f) {
+    inline double Oscillator1MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        return (kMiddleA / 32.0) * pow(2, (((note+detune) - 9.0) / 12.0));
+        double pitchBend = (mPitchBend - 0x40) * 12.0 / 0x40;
+//        printf("%lf\n", pitchBend);
+        return (kMiddleA / 32.0) * pow(2, (((note+pitchBend) - 9.0) / 12.0));
     }
 
 //    void setFrequency(double frequency) {
@@ -50,8 +59,8 @@ public:
     
     void noteOn(int note) {
         mNote = note;
-        double osc1freq = MIDINoteDoubleToFrequency(mNote, 0.0f);
-        double osc2freq = MIDINoteDoubleToFrequency(mNote, mOsc2DetuneCents/100.0f);
+        double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
+        double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
         mOsc1.setFrequency(osc1freq);
         mOsc2.setFrequency(osc2freq);
         mADSREnv.noteOn();
@@ -64,7 +73,15 @@ public:
     
     void setDetune(int detuneCents) {
         mOsc2DetuneCents = detuneCents;
-        double osc2freq = MIDINoteDoubleToFrequency(mNote, detuneCents/100.0f);
+        double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
+        mOsc2.setFrequency(osc2freq);
+    }
+    
+    void setPitchBend(uint8 pitchBend) {
+        mPitchBend = pitchBend;
+        double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
+        double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
+        mOsc1.setFrequency(osc1freq);
         mOsc2.setFrequency(osc2freq);
     }
     
@@ -91,6 +108,7 @@ private:
     int mNote;
     int mOsc2DetuneCents = {0};
     double mFrequency = {0.0f};
+    uint8 mPitchBend = 0x40;
     
     SawtoothOscillator mOsc1;
     SawtoothOscillator mOsc2;

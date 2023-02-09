@@ -16,7 +16,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack() {
+        return VStack() {
             Text("\(hostModel.viewModel.title )")
                 .textSelection(.enabled)
                 .padding()

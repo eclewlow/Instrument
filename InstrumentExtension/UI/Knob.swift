@@ -3,6 +3,7 @@
 #if os(macOS)
 
 import AppKit
+import SwiftUI
 
 /**
  Custom UIControl/NSControl that depicts a value as a point on a circle. Changing the value is done by touching on the
@@ -15,7 +16,18 @@ import AppKit
  is controlled by the `startAngle` and `endAngle` settings.
  */
 open class Knob: NSControl {
+    public enum Scale {
+        case logarithmic, linear
+    }
+    
+    private var minlval: Float {log(self.minimumValue)}
+    private var maxlval: Float {log(self.maximumValue)}
 
+    private var logscale: Float { (self.maxlval - self.minlval) / Float(self.endAngle - self.startAngle) }
+    
+    public var scale: Scale = Scale.logarithmic
+    
+    public var rotation: Float = 0.0
   /// The minimum value reported by the control.
   public var minimumValue: Float = 0.0 { didSet { setValue(_value, animated: false) } }
 
@@ -210,6 +222,13 @@ extension Knob {
    */
   public func setValue(_ value: Float, animated: Bool = false) {
     _value = clampedValue(value)
+      if scale == Scale.linear {
+          rotation = Float(angleForValue)
+      }
+      else if scale == Scale.logarithmic {
+          rotation = Float(startAngle) + (log(_value) - minlval) / logscale
+      }
+
     restorationTimer?.invalidate()
     valueLabel?.stringValue = formattedValue
     progressLayer.setNeedsDisplay()
@@ -230,7 +249,8 @@ extension Knob: CALayerDelegate {
       progressLayer.lineWidth = progressLineWidth
       progressLayer.strokeColor = progressColor.cgColor
       progressLayer.path = createRing().cgPath
-      progressLayer.strokeEnd = CGFloat((value - minimumValue) / (maximumValue - minimumValue))
+//      progressLayer.strokeEnd = CGFloat((value - minimumValue) / (maximumValue - minimumValue))
+        progressLayer.strokeEnd = CGFloat((CGFloat(rotation) - startAngle) / (endAngle-startAngle))
     } else if layer === ticksLayer {
       ticksLayer.lineWidth = tickLineWidth
       ticksLayer.strokeColor = tickColor.cgColor
@@ -322,12 +342,28 @@ extension Knob {
     // - otherwise, it linearly gets smaller as X moves away from the center
     //
     let scaleT = dX <= maxChangeRegionWidthHalf ? 1.0 : (1.0 - dX / halfTravelDistance)
-    print(dX, scaleT)
+//    print(dX, scaleT)
+//
+//    let deltaT = Float((dY * scaleT) / (travelDistance * touchSensitivity))
+//    let change = deltaT * (maximumValue - minimumValue)
+//    self.value += change
+//    notifyTarget()
+      //    print(dX, scaleT)
+            print("startangle=\(startAngle), endAngle=\(endAngle), rotation=\(rotation), value=\(value), minlval=\(minlval), logscale=\(logscale)")
 
-    let deltaT = Float((dY * scaleT) / (travelDistance * touchSensitivity))
-    let change = deltaT * (maximumValue - minimumValue)
-    self.value += change
-    notifyTarget()
+          let deltaT = Float((dY * scaleT) / (travelDistance * touchSensitivity))
+          let change = deltaT * (maximumValue - minimumValue)
+      //    self.value += change
+            self.rotation += Float(dY) * .pi / 180.0
+            
+            rotation = rotation < Float(startAngle) ? Float(startAngle) : rotation > Float(endAngle) ? Float(endAngle) : rotation
+            
+            if self.scale==Scale.linear  {
+                self.value=minimumValue + (maximumValue - minimumValue) * (self.rotation - Float(startAngle)) / Float(endAngle-startAngle)
+            } else if self.scale == Scale.logarithmic {
+                self.value=exp((self.rotation - Float(startAngle)) * logscale + minlval)
+            }
+          notifyTarget()
   }
 
   private func notifyTarget() {
@@ -384,7 +420,7 @@ extension Knob {
     indicator.move(to: CGPoint(x: radius, y: 0.0))
     indicator.line(to: CGPoint(x: radius * (1.0 - indicatorLineLength), y: 0.0))
     indicator.apply(.init(translationX: bounds.width / 2, y: bounds.height / 2)
-      .rotated(by: angle(for: value)))
+      .rotated(by:  CGFloat(self.rotation)))
     indicatorLayer.path = indicator.cgPath
   }
 

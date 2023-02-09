@@ -12,10 +12,8 @@ import AppKit
 public struct KnobView: NSViewRepresentable {
 
     @ObservedObject var param: ObservableAUParameter
-  /// The current value of the Knob
-  @Binding private var value: Float
-  /// Signal that the knob is being manipulated
-  @Binding private var manipulating: Bool
+    
+    private var scale: Knob.Scale
 
   private var minimumValue: Float
   private var maximumValue: Float
@@ -38,15 +36,16 @@ public struct KnobView: NSViewRepresentable {
   private var tickLineWidth: CGFloat = 1.0
   private var tickColor: Color = .black
 
-    init(param: ObservableAUParameter, value: Binding<Float>, manipulating: Binding<Bool>) {
+    init(param: ObservableAUParameter, scale: Knob.Scale=Knob.Scale.linear) {
 //      public init(value: Binding<Float>, minimum: Float = 0.0, maximum: Float = 1.0) {
       self.param = param
-      self._value = value
+//      self._value = value
 //    self._manipulating = manipulating
-      self.minimumValue = 0//param.min
-        self.maximumValue = 1.0///param.max
+      self.minimumValue = param.min
+        self.maximumValue = param.max
 //      self.value = param.value
-      self._manipulating = manipulating
+//      self._manipulating = manipulating
+        self.scale = scale
   }
 
   /**
@@ -66,7 +65,7 @@ public struct KnobView: NSViewRepresentable {
   public func updateNSView(_ view: Knob, context: Context) { updateView(view, context: context) }
 
   func makeView(context: Context) -> Knob {
-    let knob = Knob()
+      let knob = Knob()
     context.coordinator.monitor(knob)
     updateView(knob, context: context)
     return knob
@@ -74,10 +73,12 @@ public struct KnobView: NSViewRepresentable {
 
   func updateView(_ view: Knob, context: Context) {
       view.value = param.value
+      
+      view.scale = scale
 
     view.minimumValue = minimumValue
     view.maximumValue = maximumValue
-
+      
     view.touchSensitivity = touchSensitivity
     view.maxChangeRegionWidthPercentage = maxChangeRegionWidthPercentage
 
@@ -123,8 +124,8 @@ public struct KnobView: NSViewRepresentable {
 
     @objc func valueChanged(_ sender: Knob) {
         knobView.param.value = sender.value
-      knobView.value = sender.value
-      knobView.manipulating = sender.manipulating
+//      knobView.value = sender.value
+//      knobView.manipulating = sender.manipulating
         knobView.param.onEditingChanged(true)
     }
   }

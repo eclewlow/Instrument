@@ -43,11 +43,6 @@ public:
         return (kMiddleA / 32.0) * pow(2, ((note - 9) / 12.0));
     }
 
-    inline double MIDINoteDoubleToFrequency(double note, double detune=0.0f) {
-        constexpr auto kMiddleA = 440.0;
-        return (kMiddleA / 32.0) * pow(2, (((note+detune) - 9.0) / 12.0));
-    }
-
 //    void setFrequency(double frequency) {
 //        mDeltaOmega = frequency / mSampleRate;
 //    }
@@ -77,8 +72,7 @@ public:
     void setDetune(int detuneCents) {
         std::list<Voice>::iterator it;
         mOsc2DetuneCents = detuneCents;
-//        double osc2freq = MIDINoteDoubleToFrequency(mNote, detuneCents/100.0f);
-//        mOsc2.setFrequency(osc2freq);
+
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
             (*it).setDetune(detuneCents);
         }
@@ -103,8 +97,6 @@ public:
     
     void noteOn(int note) {
 //        mNote = note;
-//        double osc1freq = MIDINoteDoubleToFrequency(mNote, 0.0f);
-//        double osc2freq = MIDINoteDoubleToFrequency(mNote, mOsc2DetuneCents/100.0f);
         std::list<Voice>::iterator it;
         
         mVoiceList.remove_if(voice_is_off);
@@ -138,7 +130,7 @@ public:
 //                mVoiceList.push_back(v);
 //                // if we've run out of voices.  Get the oldest voice and set it's frequency rather than start the envelope generator over
 //            } else {
-                Voice v = Voice(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mOsc2DetuneCents, mCutoff, mResonance, mSampleRate);
+                Voice v = Voice(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mOsc2DetuneCents, mPitchBend, mCutoff, mResonance, mSampleRate);
                 v.noteOn(note);
                 mVoiceList.push_back(v);
 //            }
@@ -164,12 +156,23 @@ public:
         }
     }
     
+    void setPitchBend(uint8 pitchBend) {
+        std::list<Voice>::iterator it;
+        mPitchBend = pitchBend;
+
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).setPitchBend(pitchBend);
+        }
+
+    }
+    
 private:
     double mOmega = { 0.0 };
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
     int mNote;
     int mOsc2DetuneCents = {0};
+    uint8 mPitchBend = 0x40;
     std::list<Voice>mVoiceList;
     
     double mVCAAttack = 10.0f;

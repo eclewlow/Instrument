@@ -201,7 +201,11 @@ public:
                     thisObject->handleMIDI2VoiceMessage(message);
                 }
                     break;
-                    
+                 
+                case kMIDIMessageTypeChannelVoice1: {
+                    thisObject->handleMIDI1VoiceMessage(message);
+                }
+                    break;
                 default:
                     break;
             }
@@ -209,7 +213,15 @@ public:
         
         MIDIEventListForEachEvent(&midiEvent->eventList, visitor, this);
     }
-    
+    void handleMIDI1VoiceMessage(const struct MIDIUniversalMessage& message) {
+        switch (message.channelVoice1.status) {
+            case kMIDICVStatusPitchBend: {
+            }
+                break;
+            default:
+                break;
+        }
+    }
     void handleMIDI2VoiceMessage(const struct MIDIUniversalMessage& message) {
         const auto& note = message.channelVoice2.note;
         
@@ -221,23 +233,34 @@ public:
                 break;
                 
             case kMIDICVStatusNoteOn: {
-                const auto velocity = message.channelVoice2.note.velocity;
-                const auto freqHertz   = MIDINoteToFrequency(note.number);
+//                const auto velocity = message.channelVoice2.note.velocity;
+//                const auto freqHertz   = MIDINoteToFrequency(note.number);
 
-//                mSinOsc = SinOscillator(mSampleRate);
-//                mSawOsc = SawtoothOscillator(mSampleRate);
-//                mADSREnv = ADSREnvelope(mSampleRate);
                 mVoiceManager.noteOn(note.number);
+
+//                printf("%d\n", note.number) ;
 
 //                mVoice.setFrequency(freqHertz);
                 // Set frequency on per channel oscillator
                 // Use velocity to set amp envelope level
 //                mNoteEnvelope = (double)velocity / (double)std::numeric_limits<std::uint16_t>::max();
                 mNoteEnvelope = 1.0f;
+            }
+                break;
+            case kMIDICVStatusPitchBend: {
+//                printf("%x\n", message.channelVoice2.pitchBend.data);
+                uint8 pitchBend = (message.channelVoice2.pitchBend.data >> 25) & 0x7F;
+//                                printf("%x\n", pitchBend);
+                mVoiceManager.setPitchBend(pitchBend);
+//                printf("%x\n", message.channelVoice1.pitchBend);
+//                printf("%x\n", message.channelVoice2.pitchBend.data);
+//                printf("%x\n", message.channelVoice2.pitchBend.reserved[0]);
+//                printf("%x\n", message.channelVoice2.pitchBend.reserved[1]);
+//                NSLog(<#NSString * _Nonnull format, ...#>)
+//                0111 1111
                 
             }
                 break;
-                
             default:
                 break;
         }
