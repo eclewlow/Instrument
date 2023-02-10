@@ -13,6 +13,8 @@
 #import "SinOscillator.h"
 #import "SawtoothOscillator.h"
 #import "ADSREnvelope.h"
+#import "Voice.h"
+#import "InstrumentExtensionDSPKernel.hpp"
 
 #define MAX_VOICES 6
 
@@ -21,21 +23,14 @@ const bool voice_is_off (const Voice v)
        return v.isFinished();
    }
 
+class InstrumentExtensionDSPKernel;
+
 class VoiceManager {
 public:
-    VoiceManager() {
-        
-    }
-    VoiceManager(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, double cutoff, double resonance, double sampleRate = 44100.0) {
+  
+    
+    VoiceManager(double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
-        mOsc2DetuneCents = osc2DetuneCents;
-        mVCAAttack = vcaAttack;
-        mVCADecay = vcaDecay;
-        mVCASustain = vcaSustain;
-        mVCARelease = vcaRelease;
-        mCutoff = cutoff;
-        mResonance = resonance;
-//        mVoiceList.push_back(Voice(sampleRate));
     }
     
     inline double MIDINoteToFrequency(int note) {
@@ -46,7 +41,19 @@ public:
 //    void setFrequency(double frequency) {
 //        mDeltaOmega = frequency / mSampleRate;
 //    }
-    
+
+    void setADSREnvelope(double attack, double decay, double sustain, double release) {
+        std::list<Voice>::iterator it;
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).set( attack,  decay,  sustain,  release);
+        }
+        
+         mVCAAttack = attack;
+         mVCADecay = decay;
+         mVCASustain = sustain;
+         mVCARelease = release;
+    }
+
     void setADSREnvelope(double attack, double decay, double sustain, double release) {
         std::list<Voice>::iterator it;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {

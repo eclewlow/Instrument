@@ -12,16 +12,17 @@
 #import "SinOscillator.h"
 #import "SawtoothOscillator.h"
 #import "ADSREnvelope.h"
-#import "ResonantFilter.h"
+#import "BiquadFilter.h"
+#import "KarlsenLPF.h"
+#import "KarlsenFastLadderFilter.h"
 
 class Voice {
 public:
-    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, uint8 pitchBend, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mResonantFilter(cutoff, resonance, sampleRate) {
+    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, uint8 pitchBend, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mVCFEnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate), mResonantFilter(cutoff, resonance, sampleRate),mResonantFilter2(cutoff, resonance, sampleRate),mKarlsenFastLadderFilter(cutoff, resonance, sampleRate), mKarlsenLPF(cutoff, resonance, sampleRate) {
         mSampleRate = sampleRate;
         mOsc1 =SawtoothOscillator(mSampleRate);
         mOsc2 =SawtoothOscillator(mSampleRate);
         mADSREnv = ADSREnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, mSampleRate);
-        mResonantFilter = ResonantFilter(cutoff, resonance);
         mOsc2DetuneCents = osc2DetuneCents;
         mPitchBend = pitchBend;
     }
@@ -53,8 +54,10 @@ public:
     }
     
     double process() {
-        return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
-//        return mADSREnv.process() * mOsc1.process();
+//        return mADSREnv.process() * mKarlsenFastLadderFilter.process(mOsc1.process() + mOsc2.process());
+//                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
+        return mADSREnv.process() * mResonantFilter2.process(mResonantFilter.process(mOsc1.process() + mOsc2.process()));
+//                return mADSREnv.process() * mKarlsenLPF.process(mOsc1.process() + mOsc2.process());
     }
     
     void noteOn(int note) {
@@ -93,12 +96,45 @@ public:
         mNote = note;
     }
     
-    void setADSREnvelope(double attack, double decay, double sustain, double release) {
-        mADSREnv.setEnvelope( attack,  decay,  sustain,  release);
-    }
+//    void setADSREnvelope(double attack, double decay, double sustain, double release) {
+//        mADSREnv.setEnvelope( attack,  decay,  sustain,  release);
+//    }
     
+    void setADSREnvelopeAttack(double attack) {
+        mADSREnv.setAttack(attack);
+    }
+
+    void setADSREnvelopeDecay(double decay) {
+        mADSREnv.setDecay(decay);
+    }
+
+    void setADSREnvelopeSustain(double sustain) {
+        mADSREnv.setSustain(sustain);
+    }
+
+    void setADSREnvelopeRelease(double release) {
+        mADSREnv.setRelease(release);
+    }
+
+    void setCutoff(double cutoff) {
+        mResonantFilter.setCutoff(cutoff);
+        mResonantFilter2.setCutoff(cutoff);
+        mKarlsenFastLadderFilter.setCutoff(cutoff);
+        mKarlsenLPF.setCutoff(cutoff);
+    }
+
+    void setResonance(double resonance) {
+        mResonantFilter.setResonance(resonance);
+        mResonantFilter2.setResonance(resonance);
+        mKarlsenFastLadderFilter.setResonance(resonance);
+        mKarlsenLPF.setResonance(resonance);
+    }
+
     void setCutoffResonance(double cutoff, double resonance) {
         mResonantFilter.setCutoffResonance(cutoff, resonance);
+        mResonantFilter2.setCutoffResonance(cutoff, resonance);
+        mKarlsenFastLadderFilter.setCutoffResonance(cutoff, resonance);
+        mKarlsenLPF.setCutoffResonance(cutoff, resonance);
     }
     
 private:
@@ -113,5 +149,9 @@ private:
     SawtoothOscillator mOsc1;
     SawtoothOscillator mOsc2;
     ADSREnvelope mADSREnv;
-    ResonantFilter mResonantFilter;
+    ADSREnvelope mVCFEnvelope;
+    BiquadFilter mResonantFilter;
+    BiquadFilter mResonantFilter2;
+    KarlsenFastLadderFilter mKarlsenFastLadderFilter;
+    KarlsenLPF mKarlsenLPF;
 };

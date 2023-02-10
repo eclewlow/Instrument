@@ -42,7 +42,7 @@ static inline double squared(double x) {
     return x * x;
 }
 
-class ResonantFilter {
+class BiquadFilter {
 public:
     // MARK: Types
     struct FilterState {
@@ -157,7 +157,7 @@ public:
 //        case decay
 //        case release
 //    }
-    ResonantFilter(double cutoff, double resonance, double sampleRate = 44100.0) {
+    BiquadFilter(double cutoff, double resonance, double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
         mCutoff = cutoff;
         mResonance = resonance;
@@ -178,7 +178,7 @@ public:
 //        double resonance = double(resonanceRamper.getAndStep());
         coeffs.calculateLopassParams(
                                      clamp(mCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
-                                     clamp(mResonance, -20.0f, 20.0f)
+                                     clamp(mResonance, -20.0f, 50.0f)
                                      );
         
 //        int frameOffset = int(frameIndex + bufferOffset);
@@ -236,8 +236,8 @@ public:
 
 private:
     BiquadCoefficients coeffs;
-    double mCutoff = { 0 };
-    double mResonance = { 20000.0 };
+    double mCutoff = { 0.0 };
+    double mResonance = { 0.0 };
     double nyquist;
     double inverseNyquist;
     FilterState filterState;

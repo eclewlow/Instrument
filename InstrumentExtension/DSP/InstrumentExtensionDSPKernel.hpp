@@ -13,25 +13,21 @@
 #import <vector>
 #import <span>
 
-#import "SinOscillator.h"
-#import "SawtoothOscillator.h"
-#import "ADSREnvelope.h"
-#import "Voice.h"
 #import "VoiceManager.h"
 #import "InstrumentExtension-Swift.h"
 #import "InstrumentExtensionParameterAddresses.h"
-#import "FIRFilter.h"
+#import "SynthParams.h"
 
 /*
  InstrumentExtensionDSPKernel
  As a non-ObjC class, this is safe to use from render thread.
  */
+
 class InstrumentExtensionDSPKernel {
 public:
     void initialize(int channelCount, double inSampleRate) {
         mSampleRate = inSampleRate;
-        mVoiceManager = VoiceManager(mVCAAttack, mVCADecay, mVCASustain, mVCARelease, mDetune, mCutoff, mResonance, inSampleRate);
-        FIRFilter_Init(&mFilter);
+        mVoiceManager = VoiceManager();
     }
     
     void deInitialize() {
@@ -54,25 +50,19 @@ public:
                 mGain = value;
                 break;
             case InstrumentExtensionParameterAddress::attack:
-                mVCAAttack = value;
-                mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
-                break;    
+                synthParams.vca_attac = value;
+                break;
             case InstrumentExtensionParameterAddress::release:
-                mVCARelease = value;
-                mVoiceManager.setADSREnvelope(mVCAAttack, mVCADecay, mVCASustain, mVCARelease);
+                synthParams.vca_release = value;
                 break;
             case InstrumentExtensionParameterAddress::cutoff:
-                mCutoff = value;
-                mVoiceManager.setCutoffResonance(mCutoff, mResonance);
+                synthParams.cutoff = value;
                 break;
             case InstrumentExtensionParameterAddress::resonance:
-                mResonance = value;
-                mVoiceManager.setCutoffResonance(mCutoff, mResonance);
+                synthParams.resonance = value;
                 break;
             case InstrumentExtensionParameterAddress::detune:
-                mDetune = value;
-//                mVoice.setDetune(mDetune);
-                mVoiceManager.setDetune(mDetune);
+                synthParams.detune = value;
                 break;
         }
     }
@@ -84,15 +74,15 @@ public:
             case InstrumentExtensionParameterAddress::gain:
                 return (AUValue)mGain;
             case InstrumentExtensionParameterAddress::attack:
-                return (AUValue) mVCAAttack;
+                return (AUValue) synthParams.vca_attack;
             case InstrumentExtensionParameterAddress::release:
-                return (AUValue) mVCARelease;
+                return (AUValue) synthParams.vca_release;
             case InstrumentExtensionParameterAddress::detune:
-                return (AUValue) mDetune;
+                return (AUValue) synthParams.detune;
             case InstrumentExtensionParameterAddress::cutoff:
-                return (AUValue) mCutoff;
+                return (AUValue) synthParams.cutoff;
             case InstrumentExtensionParameterAddress::resonance:
-                return (AUValue) mResonance;
+                return (AUValue) synthParams.resonance;
             default: return 0.f;
         }
     }
@@ -152,6 +142,7 @@ public:
             // Do your frame by frame dsp here...
 //            const auto sample = mADSREnv.process() * mSawOsc.process() * mNoteEnvelope * mGain;
             const double sample = mVoiceManager.process();// * mNoteEnvelope * mGain;
+//            const double sample = 0;// * mNoteEnvelope * mGain;
 //            FIRFilter_Update(&mFilter, sample);
 //            const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
 //                        const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
@@ -244,14 +235,14 @@ public:
                 // Set frequency on per channel oscillator
                 // Use velocity to set amp envelope level
 //                mNoteEnvelope = (double)velocity / (double)std::numeric_limits<std::uint16_t>::max();
-                mNoteEnvelope = 1.0f;
+//                mNoteEnvelope = 1.0f;
             }
                 break;
             case kMIDICVStatusPitchBend: {
 //                printf("%x\n", message.channelVoice2.pitchBend.data);
                 uint8 pitchBend = (message.channelVoice2.pitchBend.data >> 25) & 0x7F;
 //                                printf("%x\n", pitchBend);
-                mVoiceManager.setPitchBend(pitchBend);
+                synthParams.pitch_bend = pitchBend;
 //                printf("%x\n", message.channelVoice1.pitchBend);
 //                printf("%x\n", message.channelVoice2.pitchBend.data);
 //                printf("%x\n", message.channelVoice2.pitchBend.reserved[0]);
@@ -271,20 +262,9 @@ public:
     
     double mSampleRate = 44100.0;
     double mGain = 1.0;
-    double mAttack = 0.0;
-    double mVCAAttack = 10.0f;
-    double mVCADecay = 0.0f;
-    double mVCASustain = 1.0f;
-    double mVCARelease = 100.0f;
-    int mDetune = 0;
-    double mNoteEnvelope = 0.0;
-    double mADSREnvelope = 0.0f;
-    double mCutoff=0;
-    double mResonance=0;
     
     bool mBypassed = false;
     AUAudioFrameCount mMaxFramesToRender = 1024;
     
     VoiceManager mVoiceManager;
-    FIRFilter mFilter;
 };
