@@ -14,13 +14,20 @@ namespace InstrumentExtensionParameterAddress {
 #endif
 
 typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
-    gain = 0,
-    sendNote = 1,
-    attack=2,
-    release=3,
-    detune=4,
-    cutoff=5,
-    resonance=6
+    gain,
+    sendNote,
+    vca_attack,
+    vca_decay,
+    vca_sustain,
+    vca_release,
+    detune,
+    cutoff,
+    resonance,
+    vcf_attack,
+    vcf_decay,
+    vcf_sustain,
+    vcf_release,
+    vcf_amount
 };
 
 #ifdef __cplusplus

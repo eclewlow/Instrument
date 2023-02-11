@@ -49,11 +49,29 @@ public:
             case InstrumentExtensionParameterAddress::gain:
                 mGain = value;
                 break;
-            case InstrumentExtensionParameterAddress::attack:
-                synthParams.vca_attac = value;
+            case InstrumentExtensionParameterAddress::vca_attack:
+                synthParams.vca_attack = value;
                 break;
-            case InstrumentExtensionParameterAddress::release:
+            case InstrumentExtensionParameterAddress::vca_decay:
+                synthParams.vca_decay = value;
+                break;
+            case InstrumentExtensionParameterAddress::vca_sustain:
+                synthParams.vca_sustain = value;
+                break;
+            case InstrumentExtensionParameterAddress::vca_release:
                 synthParams.vca_release = value;
+                break;
+            case InstrumentExtensionParameterAddress::vcf_attack:
+                synthParams.vcf_attack = value;
+                break;
+            case InstrumentExtensionParameterAddress::vcf_decay:
+                synthParams.vcf_decay = value;
+                break;
+            case InstrumentExtensionParameterAddress::vcf_sustain:
+                synthParams.vcf_sustain = value;
+                break;
+            case InstrumentExtensionParameterAddress::vcf_release:
+                synthParams.vcf_release = value;
                 break;
             case InstrumentExtensionParameterAddress::cutoff:
                 synthParams.cutoff = value;
@@ -63,6 +81,10 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::detune:
                 synthParams.detune = value;
+                synthParams.recompute_frequency = true;
+            case InstrumentExtensionParameterAddress::vcf_amount:
+                synthParams.vcf_amount = value;
+                break;
                 break;
         }
     }
@@ -73,16 +95,30 @@ public:
         switch (address) {
             case InstrumentExtensionParameterAddress::gain:
                 return (AUValue)mGain;
-            case InstrumentExtensionParameterAddress::attack:
+            case InstrumentExtensionParameterAddress::vca_attack:
                 return (AUValue) synthParams.vca_attack;
-            case InstrumentExtensionParameterAddress::release:
+            case InstrumentExtensionParameterAddress::vca_decay:
+                return (AUValue) synthParams.vca_decay;
+            case InstrumentExtensionParameterAddress::vca_sustain:
+                return (AUValue) synthParams.vca_sustain;
+            case InstrumentExtensionParameterAddress::vca_release:
                 return (AUValue) synthParams.vca_release;
+            case InstrumentExtensionParameterAddress::vcf_attack:
+                return (AUValue) synthParams.vcf_attack;
+            case InstrumentExtensionParameterAddress::vcf_decay:
+                return (AUValue) synthParams.vcf_decay;
+            case InstrumentExtensionParameterAddress::vcf_sustain:
+                return (AUValue) synthParams.vcf_sustain;
+            case InstrumentExtensionParameterAddress::vcf_release:
+                return (AUValue) synthParams.vcf_release;
             case InstrumentExtensionParameterAddress::detune:
                 return (AUValue) synthParams.detune;
             case InstrumentExtensionParameterAddress::cutoff:
                 return (AUValue) synthParams.cutoff;
             case InstrumentExtensionParameterAddress::resonance:
                 return (AUValue) synthParams.resonance;
+            case InstrumentExtensionParameterAddress::vcf_amount:
+                return (AUValue) synthParams.vcf_amount;
             default: return 0.f;
         }
     }
@@ -228,7 +264,7 @@ public:
 //                const auto freqHertz   = MIDINoteToFrequency(note.number);
 
                 mVoiceManager.noteOn(note.number);
-
+                synthParams.recompute_frequency = true;
 //                printf("%d\n", note.number) ;
 
 //                mVoice.setFrequency(freqHertz);
@@ -243,6 +279,7 @@ public:
                 uint8 pitchBend = (message.channelVoice2.pitchBend.data >> 25) & 0x7F;
 //                                printf("%x\n", pitchBend);
                 synthParams.pitch_bend = pitchBend;
+                synthParams.recompute_frequency = true;
 //                printf("%x\n", message.channelVoice1.pitchBend);
 //                printf("%x\n", message.channelVoice2.pitchBend.data);
 //                printf("%x\n", message.channelVoice2.pitchBend.reserved[0]);

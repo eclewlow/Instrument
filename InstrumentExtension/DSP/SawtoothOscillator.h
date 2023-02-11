@@ -9,13 +9,11 @@
 
 #include <numbers>
 #include <cmath>
-#import "FIRFilter.h"
 
 class SawtoothOscillator{
 public:
-    SawtoothOscillator(double sampleRate = 96000.0){
+    SawtoothOscillator(double sampleRate = 44100.0){
         mSampleRate = sampleRate;
-        FIRFilter_Init(&mFilter);
     }
     
     typedef enum {
@@ -123,5 +121,4 @@ private:
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
     OscillatorMode mOscillatorMode = OSCILLATOR_MODE_SAW;
-    FIRFilter mFilter;
 };

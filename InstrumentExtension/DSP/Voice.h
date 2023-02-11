@@ -13,36 +13,34 @@
 #import "SawtoothOscillator.h"
 #import "ADSREnvelope.h"
 #import "BiquadFilter.h"
-#import "KarlsenLPF.h"
-#import "KarlsenFastLadderFilter.h"
+#import "SynthParams.h"
 
 class Voice {
 public:
-    Voice(double vcaAttack, double vcaDecay, double vcaSustain, double vcaRelease, int osc2DetuneCents, uint8 pitchBend, double cutoff, double resonance, double sampleRate = 44100.0):mADSREnv(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate),mVCFEnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, sampleRate), mResonantFilter(cutoff, resonance, sampleRate),mResonantFilter2(cutoff, resonance, sampleRate),mKarlsenFastLadderFilter(cutoff, resonance, sampleRate), mKarlsenLPF(cutoff, resonance, sampleRate) {
+    Voice(double sampleRate = 44100.0):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF), mResonantFilter(),mResonantFilter2(){
         mSampleRate = sampleRate;
-        mOsc1 =SawtoothOscillator(mSampleRate);
-        mOsc2 =SawtoothOscillator(mSampleRate);
-        mADSREnv = ADSREnvelope(vcaAttack, vcaDecay, vcaSustain, vcaRelease, mSampleRate);
-        mOsc2DetuneCents = osc2DetuneCents;
-        mPitchBend = pitchBend;
+        mOsc1 =SawtoothOscillator();
+        mOsc2 =SawtoothOscillator();
     }
 
     inline double Oscillator2MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        double detune = mOsc2DetuneCents/100.0f;
-        double pitchBend = (mPitchBend - 0x40) * 12.0 / 0x40;
+        double detune = synthParams.detune/100.0f;
+        double pitchBend = (synthParams.pitch_bend - 0x40) * 12.0 / 0x40;
         // pitch bend is 0x00 -> 0x40 -> 0x7F
         // this allows for 64 values below middle
         // and allows for 63 values above middle,
         // including the middle this totals to 128 possible values
         return (kMiddleA / 32.0) * pow(2, (((note+detune+pitchBend) - 9.0) / 12.0));
+//        return (kMiddleA / 32.0) * pow(2, (((note) - 9.0) / 12.0));
     }
 
     inline double Oscillator1MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        double pitchBend = (mPitchBend - 0x40) * 12.0 / 0x40;
+        double pitchBend = (synthParams.pitch_bend - 0x40) * 12.0 / 0x40;
 //        printf("%lf\n", pitchBend);
         return (kMiddleA / 32.0) * pow(2, (((note+pitchBend) - 9.0) / 12.0));
+//        return (kMiddleA / 32.0) * pow(2, (((note) - 9.0) / 12.0));
     }
 
 //    void setFrequency(double frequency) {
@@ -50,14 +48,28 @@ public:
 //    }
 
     bool isFinished() const {
-        return mADSREnv.getEnvelopeState() == ADSREnvelope::kOff;
+        return mVCAEnv.getEnvelopeState() == ADSREnvelope::kOff;
     }
     
     double process() {
+        if (synthParams.recompute_frequency) {
+            recomputeFrequency();
+            synthParams.recompute_frequency = false;
+        }
 //        return mADSREnv.process() * mKarlsenFastLadderFilter.process(mOsc1.process() + mOsc2.process());
 //                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
-        return mADSREnv.process() * mResonantFilter2.process(mResonantFilter.process(mOsc1.process() + mOsc2.process()));
+        float oscillatorOutput = mOsc1.process() + mOsc2.process();
+
+        float vcfEnvelopeControlVoltage = mVCFEnv.process() * synthParams.vcf_amount;
+        
+//        vcfEnvelopeControlVoltage = 0.0;
+//        printf("%lf\n", vcfEnvelopeControlVoltage);
+
+        float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage);
+        float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage);
+        float vcaEnvelopeOutput = mVCAEnv.process() * filterState2Output;
 //                return mADSREnv.process() * mKarlsenLPF.process(mOsc1.process() + mOsc2.process());
+        return vcaEnvelopeOutput;
     }
     
     void noteOn(int note) {
@@ -66,22 +78,17 @@ public:
         double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
         mOsc1.setFrequency(osc1freq);
         mOsc2.setFrequency(osc2freq);
-        mADSREnv.noteOn();
+        mVCAEnv.noteOn();
+        mVCFEnv.noteOn();
     }
     
     void noteOff(int note) {
 //        mNote = -1;
-        mADSREnv.noteOff();
+        mVCAEnv.noteOff();
+        mVCFEnv.noteOff();
     }
-    
-    void setDetune(int detuneCents) {
-        mOsc2DetuneCents = detuneCents;
-        double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-        mOsc2.setFrequency(osc2freq);
-    }
-    
-    void setPitchBend(uint8 pitchBend) {
-        mPitchBend = pitchBend;
+        
+    void recomputeFrequency() {
         double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
         double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
         mOsc1.setFrequency(osc1freq);
@@ -96,62 +103,19 @@ public:
         mNote = note;
     }
     
-//    void setADSREnvelope(double attack, double decay, double sustain, double release) {
-//        mADSREnv.setEnvelope( attack,  decay,  sustain,  release);
-//    }
-    
-    void setADSREnvelopeAttack(double attack) {
-        mADSREnv.setAttack(attack);
-    }
-
-    void setADSREnvelopeDecay(double decay) {
-        mADSREnv.setDecay(decay);
-    }
-
-    void setADSREnvelopeSustain(double sustain) {
-        mADSREnv.setSustain(sustain);
-    }
-
-    void setADSREnvelopeRelease(double release) {
-        mADSREnv.setRelease(release);
-    }
-
-    void setCutoff(double cutoff) {
-        mResonantFilter.setCutoff(cutoff);
-        mResonantFilter2.setCutoff(cutoff);
-        mKarlsenFastLadderFilter.setCutoff(cutoff);
-        mKarlsenLPF.setCutoff(cutoff);
-    }
-
-    void setResonance(double resonance) {
-        mResonantFilter.setResonance(resonance);
-        mResonantFilter2.setResonance(resonance);
-        mKarlsenFastLadderFilter.setResonance(resonance);
-        mKarlsenLPF.setResonance(resonance);
-    }
-
-    void setCutoffResonance(double cutoff, double resonance) {
-        mResonantFilter.setCutoffResonance(cutoff, resonance);
-        mResonantFilter2.setCutoffResonance(cutoff, resonance);
-        mKarlsenFastLadderFilter.setCutoffResonance(cutoff, resonance);
-        mKarlsenLPF.setCutoffResonance(cutoff, resonance);
-    }
-    
 private:
     double mOmega = { 0.0 };
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
     int mNote;
-    int mOsc2DetuneCents = {0};
     double mFrequency = {0.0f};
-    uint8 mPitchBend = 0x40;
     
     SawtoothOscillator mOsc1;
     SawtoothOscillator mOsc2;
-    ADSREnvelope mADSREnv;
-    ADSREnvelope mVCFEnvelope;
+    ADSREnvelope mVCAEnv;
+    ADSREnvelope mVCFEnv;
     BiquadFilter mResonantFilter;
     BiquadFilter mResonantFilter2;
-    KarlsenFastLadderFilter mKarlsenFastLadderFilter;
-    KarlsenLPF mKarlsenLPF;
+//    KarlsenFastLadderFilter mKarlsenFastLadderFilter;
+//    KarlsenLPF mKarlsenLPF;
 };

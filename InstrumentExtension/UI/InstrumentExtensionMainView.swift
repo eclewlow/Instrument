@@ -24,8 +24,29 @@ struct InstrumentExtensionMainView: View {
             ParameterSlider(param: parameterTree.global.gain)
             VStack {
                 HStack{
-                    MyKnob(param: parameterTree.global.attack)
-                    MyKnob(param: parameterTree.global.release)
+                    VStack {
+                        HStack {
+                            MyKnob(param: parameterTree.global.vca_attack)
+                            MyKnob(param: parameterTree.global.vca_decay)
+                        }
+                        HStack {
+                            MyKnob(param: parameterTree.global.vca_sustain)
+                            MyKnob(param: parameterTree.global.vca_release)
+                        }
+
+                    }
+                    VStack {
+                        HStack {
+                            MyKnob(param: parameterTree.global.vcf_attack)
+                            MyKnob(param: parameterTree.global.vcf_decay)
+                        }
+                        HStack {
+                            MyKnob(param: parameterTree.global.vcf_sustain)
+                            MyKnob(param: parameterTree.global.vcf_release)
+                        }
+
+                    }
+                    MyKnob(param: parameterTree.global.vcf_amount)
                     MyKnob(param: parameterTree.global.detune)
                     MyKnob(param: parameterTree.global.cutoff, scale: Knob.Scale.logarithmic)
                     MyKnob(param: parameterTree.global.resonance)

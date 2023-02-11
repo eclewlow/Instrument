@@ -18,6 +18,8 @@ typedef struct SynthParams {
     float vcf_decay = 0.0;
     float vcf_sustain = 1.0;
     float vcf_release = 100.0;
+    
+    float vcf_amount = 1.0;
 
     float cutoff = 8500.0;
     float resonance = -8.0;
@@ -25,6 +27,8 @@ typedef struct SynthParams {
     float detune = 0.0;
     
     uint8 pitch_bend = 0x40;
+    
+    bool recompute_frequency = false;
 } SynthParams;
 
 SynthParams synthParams;

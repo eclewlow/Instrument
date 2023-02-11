@@ -27,16 +27,64 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             defaultValue: 0
         );
         ParameterSpec(
-            address: .attack,
-            identifier: "attack",
+            address: .vca_attack,
+            identifier: "vca_attack",
             name: "Attack",
             units: .milliseconds,
             valueRange: 8.0...1000.0,
             defaultValue: 100.0
         );
         ParameterSpec(
-            address: .release,
-            identifier: "release",
+            address: .vca_decay,
+            identifier: "vca_decay",
+            name: "Decay",
+            units: .milliseconds,
+            valueRange: 8.0...1000.0,
+            defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .vca_sustain,
+            identifier: "vca_sustain",
+            name: "Sustain",
+            units: .linearGain,
+            valueRange: 0.0...1.0,
+            defaultValue: 1.0
+        );
+        ParameterSpec(
+            address: .vca_release,
+            identifier: "vca_release",
+            name: "Release",
+            units: .milliseconds,
+            valueRange: 8.0...1000.0,
+            defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .vcf_attack,
+            identifier: "vcf_attack",
+            name: "Attack",
+            units: .milliseconds,
+            valueRange: 8.0...1000.0,
+            defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .vcf_decay,
+            identifier: "vcf_decay",
+            name: "Decay",
+            units: .milliseconds,
+            valueRange: 8.0...1000.0,
+            defaultValue: 100.0
+        );
+        ParameterSpec(
+            address: .vcf_sustain,
+            identifier: "vcf_sustain",
+            name: "Sustain",
+            units: .linearGain,
+            valueRange: 0.0...1.0,
+            defaultValue: 1.0
+        );
+        ParameterSpec(
+            address: .vcf_release,
+            identifier: "vcf_release",
             name: "Release",
             units: .milliseconds,
             valueRange: 8.0...1000.0,
@@ -57,7 +105,16 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             units: .decibels,
             valueRange: -8...20,
             defaultValue: -8.0
-        )
+        );
+        ParameterSpec(
+            address: .vcf_amount,
+            identifier: "vcf_amount",
+            name: "VCF Envelope Amount",
+            units: .linearGain,
+            valueRange: 0.0...1.0,
+            defaultValue: 1.0
+        );
+
     }
 }
 

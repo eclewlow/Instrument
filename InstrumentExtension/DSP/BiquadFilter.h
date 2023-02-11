@@ -9,6 +9,7 @@
 
 #include <numbers>
 #include <cmath>
+#include "SynthParams.h"
 
 
 static inline double clamp(double input, double low, double high) {
@@ -134,51 +135,21 @@ public:
             return response;
         }
     };
-//    typedef enum {
-//        kOff = 0,
-//        kAttack =1,
-//        kDecay =2,
-//        kSustain =3,
-//        kRelease =4
-//    } State;
-//
-//    typedef enum {
-//        kLinearReleaseMode = 0,
-//        kExponentialReleaseMode = 1
-//    } ReleaseMode;
-//
-//    typedef enum {
-//        kEnvelopeRetriggerMode = 0,
-//        kLegatoMode = 1
-//    } LegatoMode;
-//    private enum State {
-//        case attack
-//        case sustain
-//        case decay
-//        case release
-//    }
-    BiquadFilter(double cutoff, double resonance, double sampleRate = 44100.0) {
+
+    BiquadFilter(double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
-        mCutoff = cutoff;
-        mResonance = resonance;
         nyquist = 0.5 * sampleRate;
         inverseNyquist = 1.0 / nyquist;
-
-//        mSustain = sustain;
-//        mRelease = release;
-//        mDeltaOmega = 1.0 / sampleRate;
-//        mOmega = 0.0f;
-//        mLevel = 0.0f;
-//        mState = kOff;
     }
     
     
-    double process(float input) {
+    double process(float input, float controlVoltage = 0.0) {
 //        double cutoff    = double(cutoffRamper.getAndStep());
 //        double resonance = double(resonanceRamper.getAndStep());
+        double calulatedCutoff = synthParams.cutoff + controlVoltage * (8500.0 - synthParams.cutoff);
         coeffs.calculateLopassParams(
-                                     clamp(mCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
-                                     clamp(mResonance, -20.0f, 50.0f)
+                                     clamp(calulatedCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
+                                     clamp(synthParams.resonance, -8.0f, 20.0f)
                                      );
         
 //        int frameOffset = int(frameIndex + bufferOffset);
@@ -203,51 +174,11 @@ public:
         
         return output;
     }
-    
-//    void noteOn() {
-//        mState = kAttack;
-//        if(mLegatoMode == kEnvelopeRetriggerMode) {
-//            mResumeLevel = 0.0f;
-//        }
-//        else {
-//            mResumeLevel = mLevel;
-//        }
-//        mOmega = 0.0f;
-//    }
-//
-//    void noteOff() {
-//        mState = kRelease;
-//        mResumeLevel = mLevel;
-//        mOmega = 0.0f;
-//    }
-    
-    void setCutoffResonance(double cutoff, double resonance) {
-        mCutoff = cutoff;
-        mResonance = resonance;
-    }
-    
-    void setCutoff(double cutoff) {
-        mCutoff = cutoff;
-    }
-
-    void setResonance(double resonance) {
-        mResonance = resonance;
-    }
 
 private:
     BiquadCoefficients coeffs;
-    double mCutoff = { 0.0 };
-    double mResonance = { 0.0 };
     double nyquist;
     double inverseNyquist;
     FilterState filterState;
-//    State mState = kOff;
-//    ReleaseMode mReleaseMode = kExponentialReleaseMode;
-//    LegatoMode mLegatoMode = kLegatoMode;
-//
-//    double mLevel = {0.0};
-//    double mResumeLevel = {0.0};
-//    double mOmega = { 0.0 };
-//    double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
 };
