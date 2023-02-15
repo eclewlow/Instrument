@@ -349,7 +349,7 @@ extension Knob {
 //    self.value += change
 //    notifyTarget()
       //    print(dX, scaleT)
-            print("startangle=\(startAngle), endAngle=\(endAngle), rotation=\(rotation), value=\(value), minlval=\(minlval), logscale=\(logscale)")
+//            print("startangle=\(startAngle), endAngle=\(endAngle), rotation=\(rotation), value=\(value), minlval=\(minlval), logscale=\(logscale)")
 
           let deltaT = Float((dY * scaleT) / (travelDistance * touchSensitivity))
           let change = deltaT * (maximumValue - minimumValue)

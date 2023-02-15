@@ -41,14 +41,25 @@ public:
         
         double sample = 0.0f;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            
+            if (synthParams.recompute_frequency) {
+                (*it).recomputeFrequency();
+            }
+
+            
             sample += (*it).process();
         }
+
+        synthParams.recompute_frequency = false;
+
         return sample;
     }
 
     
     void noteOn(int note) {
         std::list<Voice>::iterator it;
+        
+//        printf("num_voices=%d\n", mVoiceList.size());
         
         mVoiceList.remove_if(voice_is_off);
         

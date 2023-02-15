@@ -82,9 +82,9 @@ public:
             case InstrumentExtensionParameterAddress::detune:
                 synthParams.detune = value;
                 synthParams.recompute_frequency = true;
+                break;
             case InstrumentExtensionParameterAddress::vcf_amount:
                 synthParams.vcf_amount = value;
-                break;
                 break;
         }
     }
@@ -280,7 +280,7 @@ public:
 //                                printf("%x\n", pitchBend);
                 synthParams.pitch_bend = pitchBend;
                 synthParams.recompute_frequency = true;
-//                printf("%x\n", message.channelVoice1.pitchBend);
+//                printf("%x\n", synthParams.pitch_bend);
 //                printf("%x\n", message.channelVoice2.pitchBend.data);
 //                printf("%x\n", message.channelVoice2.pitchBend.reserved[0]);
 //                printf("%x\n", message.channelVoice2.pitchBend.reserved[1]);

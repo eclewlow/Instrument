@@ -27,6 +27,7 @@ public:
         constexpr auto kMiddleA = 440.0;
         double detune = synthParams.detune/100.0f;
         double pitchBend = (synthParams.pitch_bend - 0x40) * 12.0 / 0x40;
+        
         // pitch bend is 0x00 -> 0x40 -> 0x7F
         // this allows for 64 values below middle
         // and allows for 63 values above middle,
@@ -52,10 +53,10 @@ public:
     }
     
     double process() {
-        if (synthParams.recompute_frequency) {
-            recomputeFrequency();
-            synthParams.recompute_frequency = false;
-        }
+//        if (synthParams.recompute_frequency) {
+//            recomputeFrequency();
+//            synthParams.recompute_frequency = false;
+//        }
 //        return mADSREnv.process() * mKarlsenFastLadderFilter.process(mOsc1.process() + mOsc2.process());
 //                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
         float oscillatorOutput = mOsc1.process() + mOsc2.process();
