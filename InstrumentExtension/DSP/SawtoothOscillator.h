@@ -27,16 +27,6 @@ public:
         mDeltaOmega = frequency / mSampleRate;
     }
 
-    double getSampleForOmega(double omega) {
-        // ramp down wave
-//        const double sample = 1.0 - 2.0*(omega * 1.0 / (std::numbers::pi_v<double> * 2.0));
-
-        // ramp up wave
-        const double sample = (2.0 * (omega * (1.0 / (M_PI * 2.0)))) - 1.0;
-
-        // we have to update omega in the calling object. basically increment omega by frequency/samplerate
-        return sample;
-    }
     // This function calculates the PolyBLEPs
     double poly_blep(double t)
     {
@@ -109,7 +99,6 @@ public:
 //        double sample = std::abs( std::sin(mOmega * (std::numbers::pi_v<double> * 2.0)));
 //        if(mOmega >= 0.25 && mOmega < 0.50 || mOmega< 1.0 && mOmega >= 0.75)
             
-//        FIRFilter_Update(&mFilter, sample);
         mOmega += mDeltaOmega;
 
         if (mOmega >= 1.0) { mOmega -= 1.0; }

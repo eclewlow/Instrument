@@ -107,12 +107,20 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             defaultValue: -8.0
         );
         ParameterSpec(
-            address: .vcf_amount,
-            identifier: "vcf_amount",
+            address: .vcf_envelope_amount,
+            identifier: "vcf_envelope_amount",
             name: "VCF Envelope Amount",
             units: .linearGain,
             valueRange: 0.0...1.0,
-            defaultValue: 1.0
+            defaultValue: 0.0
+        );
+        ParameterSpec(
+            address: .vcf_keyboard_tracking_amount,
+            identifier: "vcf_keyboard_tracking_amount",
+            name: "VCF Keyboard Tracking Amount",
+            units: .linearGain,
+            valueRange: 0.0...1.0,
+            defaultValue: 0.0
         );
 
     }

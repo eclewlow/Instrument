@@ -142,11 +142,30 @@ public:
         inverseNyquist = 1.0 / nyquist;
     }
     
-    
-    double process(float input, float controlVoltage = 0.0) {
+    /*
+     input - the input signal to be filtered
+     controlVoltage - the CV from a function generator to control added cutoff frequency (values between 0.0 ... 1.0)
+        a 0 value results in no cutoff frequency increase, and a 1.0 value results in the maximum cutoff frequency (8500 hz).
+        Due to keyboard tracking - it is still possible to have a calculated cutoff (> 8500 hz)
+     */
+    double process(float input, float controlVoltage = 0.0, float keyboardTrackingNote = 36.0) {
 //        double cutoff    = double(cutoffRamper.getAndStep());
 //        double resonance = double(resonanceRamper.getAndStep());
-        double calulatedCutoff = synthParams.cutoff + controlVoltage * (8500.0 - synthParams.cutoff);
+        float cutoffGain = pow(2, (keyboardTrackingNote - 36.0) / 12.0);
+        
+        // if voice note == C0 (12) then cutoff for voice C0 is cutoff_param * 0.5
+        // if voice note == C1 (24) then cutoff for voice C1 is cutoff_param * 1
+        // if voice note == C2 (36), then cutoff for voice C2 is cutoff_param * 2
+        // if voice note == C3 (48), then cutoff for voice C3 is cutoff_param * 2*2
+        // if keyboard tracking is 0.0, then cutoff gain is 1.0 always
+        // if keyboard tracking is 1.0, then cutoff gain is cutoffgain
+        // if keyboardtracking is 0.5
+        // (1.0-keytracking) + keytracking * cutoffGain
+        // (1.0-0.5) + 0.5 * cutoffgain
+        cutoffGain = (1.0-synthParams.vcf_keyboard_tracking_amount) + synthParams.vcf_keyboard_tracking_amount*cutoffGain;
+        
+        // so cutoff gain should range from 1.0 to cutoffgain
+        double calulatedCutoff = synthParams.cutoff*cutoffGain + controlVoltage * (8500.0 - synthParams.cutoff);
         coeffs.calculateLopassParams(
                                      clamp(calulatedCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
                                      clamp(synthParams.resonance, -8.0f, 20.0f)

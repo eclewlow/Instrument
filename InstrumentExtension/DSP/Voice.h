@@ -61,13 +61,13 @@ public:
 //                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
         float oscillatorOutput = mOsc1.process() + mOsc2.process();
 
-        float vcfEnvelopeControlVoltage = mVCFEnv.process() * synthParams.vcf_amount;
+        float vcfEnvelopeControlVoltage = mVCFEnv.process() * synthParams.vcf_envelope_amount;
         
 //        vcfEnvelopeControlVoltage = 0.0;
 //        printf("%lf\n", vcfEnvelopeControlVoltage);
 
-        float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage);
-        float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage);
+        float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage, mNote);
+        float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage, mNote);
         float vcaEnvelopeOutput = mVCAEnv.process() * filterState2Output;
 //                return mADSREnv.process() * mKarlsenLPF.process(mOsc1.process() + mOsc2.process());
         return vcaEnvelopeOutput;

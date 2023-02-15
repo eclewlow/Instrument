@@ -83,8 +83,11 @@ public:
                 synthParams.detune = value;
                 synthParams.recompute_frequency = true;
                 break;
-            case InstrumentExtensionParameterAddress::vcf_amount:
-                synthParams.vcf_amount = value;
+            case InstrumentExtensionParameterAddress::vcf_envelope_amount:
+                synthParams.vcf_envelope_amount = value;
+                break;
+            case InstrumentExtensionParameterAddress::vcf_keyboard_tracking_amount:
+                synthParams.vcf_keyboard_tracking_amount = value;
                 break;
         }
     }
@@ -117,8 +120,10 @@ public:
                 return (AUValue) synthParams.cutoff;
             case InstrumentExtensionParameterAddress::resonance:
                 return (AUValue) synthParams.resonance;
-            case InstrumentExtensionParameterAddress::vcf_amount:
-                return (AUValue) synthParams.vcf_amount;
+            case InstrumentExtensionParameterAddress::vcf_envelope_amount:
+                return (AUValue) synthParams.vcf_envelope_amount;
+            case InstrumentExtensionParameterAddress::vcf_keyboard_tracking_amount:
+                return (AUValue) synthParams.vcf_keyboard_tracking_amount;
             default: return 0.f;
         }
     }

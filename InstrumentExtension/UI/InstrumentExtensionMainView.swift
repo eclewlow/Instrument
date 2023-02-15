@@ -46,7 +46,8 @@ struct InstrumentExtensionMainView: View {
                         }
 
                     }
-                    MyKnob(param: parameterTree.global.vcf_amount)
+                    MyKnob(param: parameterTree.global.vcf_envelope_amount)
+                    MyKnob(param: parameterTree.global.vcf_keyboard_tracking_amount)
                     MyKnob(param: parameterTree.global.detune)
                     MyKnob(param: parameterTree.global.cutoff, scale: Knob.Scale.logarithmic)
                     MyKnob(param: parameterTree.global.resonance)

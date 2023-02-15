@@ -19,7 +19,8 @@ typedef struct SynthParams {
     float vcf_sustain = 1.0;
     float vcf_release = 100.0;
     
-    float vcf_amount = 1.0;
+    float vcf_envelope_amount = 0.0;
+    float vcf_keyboard_tracking_amount = 0.0;
 
     float cutoff = 8500.0;
     float resonance = -8.0;
