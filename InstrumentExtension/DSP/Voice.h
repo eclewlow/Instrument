@@ -61,7 +61,7 @@ public:
 //                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
         float oscillatorOutput = mOsc1.process() + mOsc2.process();
 
-        float vcfEnvelopeControlVoltage = mVCFEnv.process() * synthParams.vcf_envelope_amount;
+        float vcfEnvelopeControlVoltage = mVCFEnv.process();
         
 //        vcfEnvelopeControlVoltage = 0.0;
 //        printf("%lf\n", vcfEnvelopeControlVoltage);

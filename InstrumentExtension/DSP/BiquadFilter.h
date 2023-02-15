@@ -151,7 +151,10 @@ public:
     double process(float input, float controlVoltage = 0.0, float keyboardTrackingNote = 36.0) {
 //        double cutoff    = double(cutoffRamper.getAndStep());
 //        double resonance = double(resonanceRamper.getAndStep());
-        float cutoffGain = pow(2, (keyboardTrackingNote - 36.0) / 12.0);
+        float keytrackingGain, vcfEnvironmentGain, keytrackingNotePow2, vcfEnvironmentPow2;
+        
+        // power of 2 multiplier for frequency cutoff depending on note.  2^(-1 ... 8?)
+        keytrackingNotePow2 = pow(2, (keyboardTrackingNote - 36.0) / 12.0);
         
         // if voice note == C0 (12) then cutoff for voice C0 is cutoff_param * 0.5
         // if voice note == C1 (24) then cutoff for voice C1 is cutoff_param * 1
@@ -159,15 +162,30 @@ public:
         // if voice note == C3 (48), then cutoff for voice C3 is cutoff_param * 2*2
         // if keyboard tracking is 0.0, then cutoff gain is 1.0 always
         // if keyboard tracking is 1.0, then cutoff gain is cutoffgain
+        // so cutoff gain should range from 1.0 to cutoffgain
         // if keyboardtracking is 0.5
         // (1.0-keytracking) + keytracking * cutoffGain
         // (1.0-0.5) + 0.5 * cutoffgain
         // the power function works here as well (cutoffgain ^ keyboardTracking)
 //        cutoffGain = (1.0-synthParams.vcf_keyboard_tracking_amount) + synthParams.vcf_keyboard_tracking_amount*cutoffGain;
-        cutoffGain = pow(cutoffGain, synthParams.vcf_keyboard_tracking_amount);
         
-        // so cutoff gain should range from 1.0 to cutoffgain
-        double calulatedCutoff = synthParams.cutoff*cutoffGain + controlVoltage * (8500.0 - synthParams.cutoff);
+        // power of 2 multiplier condensed to range from 1.0 ... keytrackingNotePow2, throttled by key tracking amount param
+        keytrackingGain = pow(keytrackingNotePow2, synthParams.vcf_keyboard_tracking_amount);
+        
+        // Relationship between VCF Env Amount (with Sustain at 1.0)
+        // env amount ranges from 0.0 to 100.0
+        // when cutoff is 1000 hz and (env: 0.0, sustain: 1.0)
+        // when cutoff is 1000 hz and (env: 12.0, sustain 1.0) final cutoff is 2000hz
+        // cutoff: 1000 hz, env: 24.0, sustain 1.0 -> final cutoff: 40000hz
+        // so gain = 2 ^ ((controlVoltage*100) / 12.0)
+        vcfEnvironmentPow2 = pow(2, (synthParams.vcf_envelope_amount*100) / 12.0);
+        vcfEnvironmentGain = pow(vcfEnvironmentPow2, controlVoltage);
+        
+//        printf("envpow2=%lf,controlvoltage = %lf\n", vcfEnvironmentPow2, controlVoltage);
+//        printf("cutoff=%lf,keytrack gain = %lf, env gain = %lf\n", synthParams.cutoff, keytrackingGain, vcfEnvironmentGain);
+        
+        double calulatedCutoff = synthParams.cutoff*keytrackingGain*vcfEnvironmentGain;
+        //+ controlVoltage * (8500.0 - synthParams.cutoff);
         coeffs.calculateLopassParams(
                                      clamp(calulatedCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
                                      clamp(synthParams.resonance, -8.0f, 20.0f)
