@@ -162,7 +162,9 @@ public:
         // if keyboardtracking is 0.5
         // (1.0-keytracking) + keytracking * cutoffGain
         // (1.0-0.5) + 0.5 * cutoffgain
-        cutoffGain = (1.0-synthParams.vcf_keyboard_tracking_amount) + synthParams.vcf_keyboard_tracking_amount*cutoffGain;
+        // the power function works here as well (cutoffgain ^ keyboardTracking)
+//        cutoffGain = (1.0-synthParams.vcf_keyboard_tracking_amount) + synthParams.vcf_keyboard_tracking_amount*cutoffGain;
+        cutoffGain = pow(cutoffGain, synthParams.vcf_keyboard_tracking_amount);
         
         // so cutoff gain should range from 1.0 to cutoffgain
         double calulatedCutoff = synthParams.cutoff*cutoffGain + controlVoltage * (8500.0 - synthParams.cutoff);
