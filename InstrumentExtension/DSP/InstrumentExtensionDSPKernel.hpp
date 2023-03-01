@@ -213,7 +213,6 @@ public:
     
     void handleParameterEvent(AUEventSampleTime now, AUParameterEvent const& parameterEvent) {
         // Implement handling incoming Parameter events as needed
-//        mVoice.setDetune(mDetune);
 //        fprintf(
 //          stdout,
 //          "ParameterEvent: parameterIndex=%d time=%.3f value=%.4f\n",
@@ -236,6 +235,10 @@ public:
                  
                 case kMIDIMessageTypeChannelVoice1: {
                     thisObject->handleMIDI1VoiceMessage(message);
+                }
+                    break;
+                case kMIDIMessageTypeSystem: {
+                    thisObject->handleMIDISystemMessage(message);
                 }
                     break;
                 default:
@@ -270,7 +273,6 @@ public:
 
                 mVoiceManager.noteOn(note.number);
                 synthParams.recompute_frequency = true;
-//                printf("%d\n", note.number) ;
 
 //                mVoice.setFrequency(freqHertz);
                 // Set frequency on per channel oscillator
@@ -280,18 +282,20 @@ public:
             }
                 break;
             case kMIDICVStatusPitchBend: {
-//                printf("%x\n", message.channelVoice2.pitchBend.data);
+
                 uint8 pitchBend = (message.channelVoice2.pitchBend.data >> 25) & 0x7F;
-//                                printf("%x\n", pitchBend);
+
                 synthParams.pitch_bend = pitchBend;
                 synthParams.recompute_frequency = true;
-//                printf("%x\n", synthParams.pitch_bend);
-//                printf("%x\n", message.channelVoice2.pitchBend.data);
-//                printf("%x\n", message.channelVoice2.pitchBend.reserved[0]);
-//                printf("%x\n", message.channelVoice2.pitchBend.reserved[1]);
-//                NSLog(<#NSString * _Nonnull format, ...#>)
-//                0111 1111
-                
+            }
+                break;
+            default:
+                break;
+        }
+    }
+    void handleMIDISystemMessage(const struct MIDIUniversalMessage& message) {
+        switch (message.system.status) {
+            case kMIDIStatusStop: {
             }
                 break;
             default:

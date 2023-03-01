@@ -25,7 +25,12 @@ public:
         kLinearReleaseMode = 0,
         kExponentialReleaseMode = 1
     } ReleaseMode;
-    
+
+    typedef enum {
+        kLinearAttackMode = 0,
+        kLogarithmicAttackMode = 1
+    } AttackMode;
+
     typedef enum {
         ADSR_TYPE_VCA = 0,
         ADSR_TYPE_VCF = 1,
@@ -39,17 +44,10 @@ public:
     
     ADSREnvelope(ADSRType adsrType = ADSR_TYPE_VCA, double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
-        mDeltaOmega = 1.0 / sampleRate;
-        mOmega = 0.0f;
-        mLevel = 0.0f;
         mState = kOff;
         mADSRType = adsrType;
     }
     
-    double getSampleForOmega(double omega) {
-        return 0.0f;
-    }
-
     double process() {
         float attack, decay, sustain, release;
         
@@ -64,105 +62,53 @@ public:
             sustain = synthParams.vcf_sustain;
             release = synthParams.vcf_release;
         }
-
         
         if(mState == kOff) {
             return 0.0f;
         }
         else if(mState == kAttack)
         {
-            // attack: y = mx+b
-            double m, sample;
-            
-            if(attack == 0.0f) {
-                sample = 1.0f;
-            }
-            else{
-                m = (1.0 - mResumeLevel) / (attack / 1000.0f);
-                sample = m * mOmega + mResumeLevel;
-            }
+            mGain = (mCoeff * mGain) + ((1.0 - mCoeff) * 1.0);
 
-            mLevel = sample;
-
-            if(sample >= 1.0) {
-                sample = 1.0;
-                mLevel = sample;
+            if(mGain >= 1.0 - 0.001) {
+                mGain = 1.0;
                 mState = kDecay;
-                mOmega = 0.0f;
-                return sample;
+                double timeConstant = (decay) * mSampleRate * 0.001;
+                mCoeff = pow(1.0/0.001, -1.0/timeConstant);
+                return mGain;
             } else {
-                mOmega += mDeltaOmega;
-                return sample;
+                return mGain;
             }
             
         } else if(mState == kDecay) {
-            // attack: y = -mx+b
-            double m, sample;
             
-            if(decay == 0.0f) {
-                sample = sustain;
-            }
-            else {
-//                m = (sustain - 1.0) / (decay / 1000.0f);
-//                sample = m * mOmega + 1.0f;
-                sample = ((1.0-sustain) / pow(decay/1000.0f, 2.0f))*pow((mOmega - decay/1000.0f), 2) + sustain;
-            }
+            mGain = (mCoeff * mGain) + ((1.0 - mCoeff) * sustain);
             
-            mLevel = sample;
-            
-            if(sample <= sustain  || mOmega >= decay/1000.0f) {
-                sample = sustain;
-                mLevel = sample;
+            if(mGain <= sustain + 0.001) {
+                mGain = sustain;
                 mState = kSustain;
-                mOmega = 0.0f;
-                return sample;
+                mCoeff = 0.0;
+                return mGain;
             } else {
-                mOmega += mDeltaOmega;
-                return sample;
+                return mGain;
             }
-        } else if(mState == kSustain) {
-            // attack: y = sustain
-            double sample = sustain;
-            mLevel = sample;
-            mOmega += mDeltaOmega;
-            return sample;
-        } else if(mState == kRelease) {
-            // attack: y = -mx+b
-            double m, sample=0.0f;
-            
-            if(release == 0.0f) {
-                sample = 0.0f;
-            }
-            else {
-                /* exp release mode */
-                if(mReleaseMode == kExponentialReleaseMode){
-                    sample = (mResumeLevel / pow(release/1000.0f, 2.0f))*pow((mOmega - release/1000.0f), 2);
 
-                }
-                /* linear release mode */
-                else if(mReleaseMode == kLinearReleaseMode) {
-                    m = (0.0 - mResumeLevel) / (release / 1000.0f);
-                    sample = m * mOmega + mResumeLevel;
-                }
-            }
+        } else if(mState == kSustain) {
+            mGain = sustain;
+            return mGain;
+        } else if(mState == kRelease) {
+
+            mGain = (mCoeff * mGain) + ((1.0 - mCoeff) * 0.0);
             
-            mLevel = sample;
-            
-            if(sample >= 1.0f) {
-                sample = 1.0f;
-                mLevel = sample;
-            }
-            
-            if(sample <= 0.0f || mOmega >= release/1000.0f) {
-                sample = 0.0f;
-                mLevel = sample;
+            if(mGain <= 0.0 + 0.001) {
+                mGain = 0.0;
                 mState = kOff;
-                mOmega = 0.0f;
-                return sample;
+                mCoeff = 0.0;
+                return mGain;
             } else {
-                mOmega += mDeltaOmega;
-                return sample;
+                return mGain;
             }
+
         }
         
         return 0.0f;
@@ -170,19 +116,29 @@ public:
     
     void noteOn() {
         mState = kAttack;
+
+        if(mADSRType == ADSR_TYPE_VCA) {
+            double timeConstant = (synthParams.vca_attack) * mSampleRate * 0.001;
+            mCoeff = pow(1.0/0.001, -1.0/timeConstant);
+        } else if(mADSRType == ADSR_TYPE_VCF) {
+            double timeConstant = (synthParams.vcf_attack) * mSampleRate * 0.001;
+            mCoeff = pow(1.0/0.001, -1.0/timeConstant);
+        }
+
         if(mLegatoMode == kEnvelopeRetriggerMode) {
-            mResumeLevel = 0.0f;
+            mGain = 0.0;
         }
-        else {
-            mResumeLevel = mLevel;
-        }
-        mOmega = 0.0f;
     }
     
     void noteOff() {
         mState = kRelease;
-        mResumeLevel = mLevel;
-        mOmega = 0.0f;
+        if(mADSRType == ADSR_TYPE_VCA) {
+            double timeConstant = (synthParams.vca_release) * mSampleRate * 0.001;
+            mCoeff = pow(1.0/0.001, -1.0/timeConstant);
+        } else if(mADSRType == ADSR_TYPE_VCF) {
+            double timeConstant = (synthParams.vcf_release) * mSampleRate * 0.001;
+            mCoeff = pow(1.0/0.001, -1.0/timeConstant);
+        }
     }
     
     State getEnvelopeState() const {
@@ -194,10 +150,9 @@ private:
     ReleaseMode mReleaseMode = kExponentialReleaseMode;
     LegatoMode mLegatoMode = kLegatoMode;
     ADSRType mADSRType = ADSR_TYPE_VCA;
+    AttackMode mAttackMode = kLogarithmicAttackMode;
     
-    double mLevel = {0.0};
-    double mResumeLevel = {0.0};
-    double mOmega = { 0.0 };
-    double mDeltaOmega = { 0.0 };
+    double mGain = {0.0};
+    double mCoeff = {0.0};
     double mSampleRate = { 0.0 };
 };
