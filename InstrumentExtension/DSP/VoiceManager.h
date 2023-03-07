@@ -10,8 +10,7 @@
 #include <numbers>
 #include <cmath>
 #include <list>
-#import "SinOscillator.h"
-#import "SawtoothOscillator.h"
+#import "Oscillator.h"
 #import "ADSREnvelope.h"
 #import "Voice.h"
 #import "SynthParams.h"
@@ -33,10 +32,6 @@ public:
         mSampleRate = sampleRate;
         mSynthParams = synthParams;
     }
-
-//    void setFrequency(double frequency) {
-//        mDeltaOmega = frequency / mSampleRate;
-//    }
 
     double process() {
         std::list<Voice>::iterator it;
@@ -60,9 +55,7 @@ public:
     
     void noteOn(int note) {
         std::list<Voice>::iterator it;
-        
-//        printf("num_voices=%d\n", mVoiceList.size());
-        
+                
         mVoiceList.remove_if(voice_is_off);
         
         int foundNoteIndex = -1;
@@ -77,41 +70,15 @@ public:
             }
             i++;
         }
-//        i = 0;
-//        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
-//            if((*it).getNote() == -1) {
-//                freeNoteIndex = i;
-//                break;
-//            }
-//            i++;
-//        }
         if(foundNoteIndex < 0) {
-            // else , if we have voices left over, push a new voice with env generator reset
-//            if(mVoiceList.size() >= MAX_VOICES) {
-//                Voice v = mVoiceList.front();
-//                mVoiceList.erase(mVoiceList.begin());
-//                v.noteOn(note);
-//                mVoiceList.push_back(v);
-//                // if we've run out of voices.  Get the oldest voice and set it's frequency rather than start the envelope generator over
-//            } else {
-                Voice v = Voice(mSampleRate, mSynthParams);
-                v.noteOn(note);
-                mVoiceList.push_back(v);
-//            }
-        } else {
-//            Voice v = *it;
-//            mVoiceList.remove(v);
-//            mVoiceList.erase(it);
-//            v.noteOn(note);
-//            mVoiceList.push_back(v);
+            Voice v = Voice(mSampleRate, mSynthParams);
+            v.noteOn(note);
+            mVoiceList.push_back(v);
         }
     }
     
     void noteOff(int note) {
-//        mADSREnv.noteOff();
         std::list<Voice>::iterator it;
-//        mVoiceList
-//        mVoiceList.remove_if([note](Voice v){ return v.getNote() == note; });
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
             
             if((*it).getNote() == note) {

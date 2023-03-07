@@ -181,18 +181,13 @@ public:
         // so gain = 2 ^ ((controlVoltage*100) / 12.0)
         vcfEnvironmentPow2 = pow(2, (mSynthParams->vcf_envelope_amount*100) / 12.0);
         vcfEnvironmentGain = pow(vcfEnvironmentPow2, controlVoltage);
-        
-//        printf("envpow2=%lf,controlvoltage = %lf\n", vcfEnvironmentPow2, controlVoltage);
-//        printf("cutoff=%lf,keytrack gain = %lf, env gain = %lf\n", synthParams.cutoff, keytrackingGain, vcfEnvironmentGain);
-        
+                
         double calulatedCutoff = mSynthParams->cutoff*keytrackingGain*vcfEnvironmentGain;
         //+ controlVoltage * (8500.0 - synthParams.cutoff);
         coeffs.calculateLopassParams(
                                      clamp(calulatedCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
                                      clamp(mSynthParams->resonance, -8.0f, 20.0f)
                                      );
-        
-//        int frameOffset = int(frameIndex + bufferOffset);
         FilterState& state = filterState;
 //        for (int channel = 0; channel < channelCount; ++channel) {
             

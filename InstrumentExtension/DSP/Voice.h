@@ -9,8 +9,7 @@
 
 #include <numbers>
 #include <cmath>
-#import "SinOscillator.h"
-#import "SawtoothOscillator.h"
+#import "Oscillator.h"
 #import "ADSREnvelope.h"
 #import "BiquadFilter.h"
 #import "SynthParams.h"
@@ -19,8 +18,8 @@ class Voice {
 public:
     Voice(double sampleRate = 44100.0, SynthParams* synthParams={}):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA, synthParams),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF, synthParams), mResonantFilter(sampleRate, synthParams),mResonantFilter2(sampleRate, synthParams){
         mSampleRate = sampleRate;
-        mOsc1 =SawtoothOscillator(sampleRate, synthParams);
-        mOsc2 =SawtoothOscillator(sampleRate, synthParams);
+        mOsc1 =Oscillator(sampleRate, synthParams);
+        mOsc2 =Oscillator(sampleRate, synthParams);
         mSynthParams = synthParams;
     }
 
@@ -34,43 +33,29 @@ public:
         // and allows for 63 values above middle,
         // including the middle this totals to 128 possible values
         return (kMiddleA / 32.0) * pow(2, (((note+detune+pitchBend) - 9.0) / 12.0));
-//        return (kMiddleA / 32.0) * pow(2, (((note) - 9.0) / 12.0));
     }
 
     inline double Oscillator1MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
         double pitchBend = (mSynthParams->pitch_bend - 0x40) * 12.0 / 0x40;
-//        printf("%lf\n", pitchBend);
-        return (kMiddleA / 32.0) * pow(2, (((note+pitchBend) - 9.0) / 12.0));
-//        return (kMiddleA / 32.0) * pow(2, (((note) - 9.0) / 12.0));
-    }
 
-//    void setFrequency(double frequency) {
-//        mDeltaOmega = frequency / mSampleRate;
-//    }
+        return (kMiddleA / 32.0) * pow(2, (((note+pitchBend) - 9.0) / 12.0));
+    }
 
     bool isFinished() const {
         return mVCAEnv.getEnvelopeState() == ADSREnvelope::kOff;
     }
     
     double process() {
-//        if (synthParams.recompute_frequency) {
-//            recomputeFrequency();
-//            synthParams.recompute_frequency = false;
-//        }
-//        return mADSREnv.process() * mKarlsenFastLadderFilter.process(mOsc1.process() + mOsc2.process());
-//                return mADSREnv.process() * mResonantFilter.process(mOsc1.process() + mOsc2.process());
+
         float oscillatorOutput = mOsc1.process() + mOsc2.process();
 
         float vcfEnvelopeControlVoltage = mVCFEnv.process();
-        
-//        vcfEnvelopeControlVoltage = 0.0;
-//        printf("%lf\n", vcfEnvelopeControlVoltage);
 
         float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage, mNote);
         float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage, mNote);
         float vcaEnvelopeOutput = mVCAEnv.process() * filterState2Output;
-//                return mADSREnv.process() * mKarlsenLPF.process(mOsc1.process() + mOsc2.process());
+
         return vcaEnvelopeOutput;
     }
     
@@ -85,7 +70,6 @@ public:
     }
     
     void noteOff(int note) {
-//        mNote = -1;
         mVCAEnv.noteOff();
         mVCFEnv.noteOff();
     }
@@ -112,13 +96,11 @@ private:
     int mNote;
     double mFrequency = {0.0f};
     
-    SawtoothOscillator mOsc1;
-    SawtoothOscillator mOsc2;
+    Oscillator mOsc1;
+    Oscillator mOsc2;
     ADSREnvelope mVCAEnv;
     ADSREnvelope mVCFEnv;
     BiquadFilter mResonantFilter;
     BiquadFilter mResonantFilter2;
     SynthParams* mSynthParams;
-//    KarlsenFastLadderFilter mKarlsenFastLadderFilter;
-//    KarlsenLPF mKarlsenLPF;
 };

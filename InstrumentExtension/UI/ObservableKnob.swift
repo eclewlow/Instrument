@@ -11,7 +11,7 @@ import Foundation
 import AudioToolbox
 
 
-struct MyKnob: View {
+struct ObservableKnob: View {
     @ObservedObject var param: ObservableAUParameter
     var scale: Knob.Scale
     

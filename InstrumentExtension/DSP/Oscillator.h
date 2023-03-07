@@ -1,5 +1,5 @@
 //
-//  SawtoothOscillator.h
+//  Oscillator.h
 //  InstrumentExtension
 //
 //  Created by Eugene Clewlow on 1/25/23.
@@ -11,9 +11,9 @@
 #include <cmath>
 #include "SynthParams.h"
 
-class SawtoothOscillator{
+class Oscillator{
 public:
-    SawtoothOscillator(double sampleRate = 44100.0, SynthParams *synthParams={}){
+    Oscillator(double sampleRate = 44100.0, SynthParams *synthParams={}){
         mSampleRate = sampleRate;
         mSynthParams = synthParams;
     }
@@ -64,7 +64,6 @@ public:
         
         if (mOscillatorMode == OSCILLATOR_MODE_SINE)
         {
-//          value = sin(mOmega); // No harmonics in sine so no aliasing!! No Poly BLEPs needed!
             value = std::sin(mOmega * (std::numbers::pi_v<double> * 2.0));
         }
         
@@ -89,17 +88,7 @@ public:
         return value; // Output
     }
     double process() {
-        // ramp down wave
-//        const double sample = 1.0 - 2.0*(mOmega * 1.0 / (std::numbers::pi_v<double> * 2.0));
-        // ramp up wave
-//        const double sample = (2.0 * (mOmega)) - 1.0;
         const double sample = nextSample();
-//        double omega = mOmega;
-//        if(mOmega >= 0.25 && mOmega < 0.50 || mOmega< 1.0 && mOmega >= 0.75) {
-            
-//        }
-//        double sample = std::abs( std::sin(mOmega * (std::numbers::pi_v<double> * 2.0)));
-//        if(mOmega >= 0.25 && mOmega < 0.50 || mOmega< 1.0 && mOmega >= 0.75)
             
         mOmega += mDeltaOmega;
 

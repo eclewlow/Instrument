@@ -181,12 +181,7 @@ public:
         // Generate per sample dsp before assigning it to out
         for (UInt32 frameIndex = 0; frameIndex < frameCount; ++frameIndex) {
             // Do your frame by frame dsp here...
-//            const auto sample = mADSREnv.process() * mSawOsc.process() * mNoteEnvelope * mGain;
-            const double sample = mVoiceManager.process();// * mNoteEnvelope * mGain;
-//            const double sample = 0;// * mNoteEnvelope * mGain;
-//            FIRFilter_Update(&mFilter, sample);
-//            const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
-//                        const auto sample =mSawOsc.process() * mNoteEnvelope * mGain;
+            const double sample = mVoiceManager.process();// * mGain;
 
             for (UInt32 channel = 0; channel < outputBuffers.size(); ++channel) {
                 outputBuffers[channel][frameIndex] = sample;
@@ -262,23 +257,13 @@ public:
         
         switch (message.channelVoice2.status) {
             case kMIDICVStatusNoteOff: {
-//                mNoteEnvelope = 0.0;
                 mVoiceManager.noteOff(note.number);
             }
                 break;
                 
             case kMIDICVStatusNoteOn: {
-//                const auto velocity = message.channelVoice2.note.velocity;
-//                const auto freqHertz   = MIDINoteToFrequency(note.number);
-
                 mVoiceManager.noteOn(note.number);
                 synthParams.recompute_frequency = true;
-
-//                mVoice.setFrequency(freqHertz);
-                // Set frequency on per channel oscillator
-                // Use velocity to set amp envelope level
-//                mNoteEnvelope = (double)velocity / (double)std::numeric_limits<std::uint16_t>::max();
-//                mNoteEnvelope = 1.0f;
             }
                 break;
             case kMIDICVStatusPitchBend: {
