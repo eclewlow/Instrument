@@ -14,6 +14,7 @@
 #import "SawtoothOscillator.h"
 #import "ADSREnvelope.h"
 #import "Voice.h"
+#import "SynthParams.h"
 
 #define MAX_VOICES 6
 
@@ -28,8 +29,9 @@ class VoiceManager {
 public:
   
     
-    VoiceManager(double sampleRate = 44100.0) {
+    VoiceManager(double sampleRate = 44100.0, SynthParams* synthParams={}) {
         mSampleRate = sampleRate;
+        mSynthParams = synthParams;
     }
 
 //    void setFrequency(double frequency) {
@@ -42,7 +44,7 @@ public:
         double sample = 0.0f;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
             
-            if (synthParams.recompute_frequency) {
+            if (mSynthParams->recompute_frequency) {
                 (*it).recomputeFrequency();
             }
 
@@ -50,7 +52,7 @@ public:
             sample += (*it).process();
         }
 
-        synthParams.recompute_frequency = false;
+        mSynthParams->recompute_frequency = false;
 
         return sample;
     }
@@ -92,7 +94,7 @@ public:
 //                mVoiceList.push_back(v);
 //                // if we've run out of voices.  Get the oldest voice and set it's frequency rather than start the envelope generator over
 //            } else {
-                Voice v = Voice();
+                Voice v = Voice(mSampleRate, mSynthParams);
                 v.noteOn(note);
                 mVoiceList.push_back(v);
 //            }
@@ -120,5 +122,6 @@ public:
     
 private:
     double mSampleRate = { 0.0 };
+    SynthParams* mSynthParams;
     std::list<Voice>mVoiceList;
 };

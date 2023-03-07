@@ -32,6 +32,4 @@ typedef struct SynthParams {
     bool recompute_frequency = false;
 } SynthParams;
 
-SynthParams synthParams;
-
 #endif /* SynthParams_h */

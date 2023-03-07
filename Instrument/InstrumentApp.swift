@@ -16,7 +16,7 @@ class InstrumentApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(hostModel: hostModel)
+            ContentView(hostModel: hostModel).background(Color.white)
         }
     }
 }

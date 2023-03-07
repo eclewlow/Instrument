@@ -9,11 +9,13 @@
 
 #include <numbers>
 #include <cmath>
+#include "SynthParams.h"
 
 class SawtoothOscillator{
 public:
-    SawtoothOscillator(double sampleRate = 44100.0){
+    SawtoothOscillator(double sampleRate = 44100.0, SynthParams *synthParams={}){
         mSampleRate = sampleRate;
+        mSynthParams = synthParams;
     }
     
     typedef enum {
@@ -110,4 +112,5 @@ private:
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
     OscillatorMode mOscillatorMode = OSCILLATOR_MODE_SAW;
+    SynthParams *mSynthParams;
 };

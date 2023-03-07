@@ -42,25 +42,26 @@ public:
     } LegatoMode;
 
     
-    ADSREnvelope(ADSRType adsrType = ADSR_TYPE_VCA, double sampleRate = 44100.0) {
+    ADSREnvelope(ADSRType adsrType = ADSR_TYPE_VCA, SynthParams* synthParams={}, double sampleRate = 44100.0) {
         mSampleRate = sampleRate;
         mState = kOff;
         mADSRType = adsrType;
+        mSynthParams = synthParams;
     }
     
     double process() {
         float attack, decay, sustain, release;
         
         if(mADSRType == ADSR_TYPE_VCA) {
-            attack = synthParams.vca_attack;
-            decay = synthParams.vca_decay;
-            sustain = synthParams.vca_sustain;
-            release = synthParams.vca_release;
+            attack = mSynthParams->vca_attack;
+            decay = mSynthParams->vca_decay;
+            sustain = mSynthParams->vca_sustain;
+            release = mSynthParams->vca_release;
         } else if(mADSRType == ADSR_TYPE_VCF) {
-            attack = synthParams.vcf_attack;
-            decay = synthParams.vcf_decay;
-            sustain = synthParams.vcf_sustain;
-            release = synthParams.vcf_release;
+            attack = mSynthParams->vcf_attack;
+            decay = mSynthParams->vcf_decay;
+            sustain = mSynthParams->vcf_sustain;
+            release = mSynthParams->vcf_release;
         }
         
         if(mState == kOff) {
@@ -118,10 +119,10 @@ public:
         mState = kAttack;
 
         if(mADSRType == ADSR_TYPE_VCA) {
-            double timeConstant = (synthParams.vca_attack) * mSampleRate * 0.001;
+            double timeConstant = (mSynthParams->vca_attack) * mSampleRate * 0.001;
             mCoeff = pow(1.0/0.001, -1.0/timeConstant);
         } else if(mADSRType == ADSR_TYPE_VCF) {
-            double timeConstant = (synthParams.vcf_attack) * mSampleRate * 0.001;
+            double timeConstant = (mSynthParams->vcf_attack) * mSampleRate * 0.001;
             mCoeff = pow(1.0/0.001, -1.0/timeConstant);
         }
 
@@ -133,10 +134,10 @@ public:
     void noteOff() {
         mState = kRelease;
         if(mADSRType == ADSR_TYPE_VCA) {
-            double timeConstant = (synthParams.vca_release) * mSampleRate * 0.001;
+            double timeConstant = (mSynthParams->vca_release) * mSampleRate * 0.001;
             mCoeff = pow(1.0/0.001, -1.0/timeConstant);
         } else if(mADSRType == ADSR_TYPE_VCF) {
-            double timeConstant = (synthParams.vcf_release) * mSampleRate * 0.001;
+            double timeConstant = (mSynthParams->vcf_release) * mSampleRate * 0.001;
             mCoeff = pow(1.0/0.001, -1.0/timeConstant);
         }
     }
@@ -155,4 +156,5 @@ private:
     double mGain = {0.0};
     double mCoeff = {0.0};
     double mSampleRate = { 0.0 };
+    SynthParams *mSynthParams;
 };

@@ -136,10 +136,11 @@ public:
         }
     };
 
-    BiquadFilter(double sampleRate = 44100.0) {
+    BiquadFilter(double sampleRate = 44100.0, SynthParams *synthParams={}) {
         mSampleRate = sampleRate;
         nyquist = 0.5 * sampleRate;
         inverseNyquist = 1.0 / nyquist;
+        mSynthParams = synthParams;
     }
     
     /*
@@ -170,7 +171,7 @@ public:
 //        cutoffGain = (1.0-synthParams.vcf_keyboard_tracking_amount) + synthParams.vcf_keyboard_tracking_amount*cutoffGain;
         
         // power of 2 multiplier condensed to range from 1.0 ... keytrackingNotePow2, throttled by key tracking amount param
-        keytrackingGain = pow(keytrackingNotePow2, synthParams.vcf_keyboard_tracking_amount);
+        keytrackingGain = pow(keytrackingNotePow2, mSynthParams->vcf_keyboard_tracking_amount);
         
         // Relationship between VCF Env Amount (with Sustain at 1.0)
         // env amount ranges from 0.0 to 100.0
@@ -178,17 +179,17 @@ public:
         // when cutoff is 1000 hz and (env: 12.0, sustain 1.0) final cutoff is 2000hz
         // cutoff: 1000 hz, env: 24.0, sustain 1.0 -> final cutoff: 40000hz
         // so gain = 2 ^ ((controlVoltage*100) / 12.0)
-        vcfEnvironmentPow2 = pow(2, (synthParams.vcf_envelope_amount*100) / 12.0);
+        vcfEnvironmentPow2 = pow(2, (mSynthParams->vcf_envelope_amount*100) / 12.0);
         vcfEnvironmentGain = pow(vcfEnvironmentPow2, controlVoltage);
         
 //        printf("envpow2=%lf,controlvoltage = %lf\n", vcfEnvironmentPow2, controlVoltage);
 //        printf("cutoff=%lf,keytrack gain = %lf, env gain = %lf\n", synthParams.cutoff, keytrackingGain, vcfEnvironmentGain);
         
-        double calulatedCutoff = synthParams.cutoff*keytrackingGain*vcfEnvironmentGain;
+        double calulatedCutoff = mSynthParams->cutoff*keytrackingGain*vcfEnvironmentGain;
         //+ controlVoltage * (8500.0 - synthParams.cutoff);
         coeffs.calculateLopassParams(
                                      clamp(calulatedCutoff * inverseNyquist, 0.0005444f, 0.9070295f),
-                                     clamp(synthParams.resonance, -8.0f, 20.0f)
+                                     clamp(mSynthParams->resonance, -8.0f, 20.0f)
                                      );
         
 //        int frameOffset = int(frameIndex + bufferOffset);
@@ -220,4 +221,5 @@ private:
     double inverseNyquist;
     FilterState filterState;
     double mSampleRate = { 0.0 };
+    SynthParams *mSynthParams;
 };

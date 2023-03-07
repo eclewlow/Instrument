@@ -12,16 +12,6 @@ struct InstrumentExtensionMainView: View {
         
     var body: some View {
         return VStack {
-            HStack{
-                Text("hi")
-                Text("you")
-                Button(action: {
-                    
-                }) {
-                    Text("hi")
-                }
-            }
-            ParameterSlider(param: parameterTree.global.gain)
             VStack {
                 HStack{
                     VStack {
@@ -53,6 +43,6 @@ struct InstrumentExtensionMainView: View {
                     MyKnob(param: parameterTree.global.resonance)
                 }
             }
-        }
+        }.background(Color.white)
     }
 }

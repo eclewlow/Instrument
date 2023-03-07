@@ -27,7 +27,7 @@ class InstrumentExtensionDSPKernel {
 public:
     void initialize(int channelCount, double inSampleRate) {
         mSampleRate = inSampleRate;
-        mVoiceManager = VoiceManager();
+        mVoiceManager = VoiceManager(mSampleRate, &synthParams);
     }
     
     void deInitialize() {
@@ -313,4 +313,5 @@ public:
     AUAudioFrameCount mMaxFramesToRender = 1024;
     
     VoiceManager mVoiceManager;
+    SynthParams synthParams;
 };

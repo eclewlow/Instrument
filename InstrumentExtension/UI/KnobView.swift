@@ -124,8 +124,6 @@ public struct KnobView: NSViewRepresentable {
 
     @objc func valueChanged(_ sender: Knob) {
         knobView.param.value = sender.value
-//      knobView.value = sender.value
-//      knobView.manipulating = sender.manipulating
         knobView.param.onEditingChanged(true)
     }
   }

@@ -41,14 +41,11 @@ struct MyKnob: View {
     var body: some View {
         VStack {
             KnobView(param: param, scale: scale).tickStyle(count: 5, offset: 0.0, length: 0.1, width: 5.0, color: Color(red: 0.25, green: 0.25, blue: 0.25))
-            //            .trackStyle(widthFactor: trackWidthFactor, color: trackColor)
-            //            .progressStyle(widthFactor: progressWidthFactor, color: progressColor)
-            //            .indicatorStyle(widthFactor: progressWidthFactor, color: progressColor, length: 0.3)
                 .accessibilityIdentifier("delay knob")
                 .frame(minWidth: 40, maxWidth: 240, minHeight: 40, maxHeight: 240)
                 .aspectRatio(1.0, contentMode: .fit)
-                .overlay(Text("\(param.value, specifier: specifier)").disabled(true).allowsHitTesting(false))
-            Text("\(param.displayName)")
+                .overlay(Text("\(param.value, specifier: specifier)").foregroundColor(Color(red: 0.25, green: 0.25, blue: 0.25)).disabled(true).allowsHitTesting(false))
+            Text("\(param.displayName)").foregroundColor(Color(red: 0.25, green: 0.25, blue: 0.25))
         }
     }
     

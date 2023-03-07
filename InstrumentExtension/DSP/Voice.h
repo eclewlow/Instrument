@@ -17,16 +17,17 @@
 
 class Voice {
 public:
-    Voice(double sampleRate = 44100.0):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF), mResonantFilter(),mResonantFilter2(){
+    Voice(double sampleRate = 44100.0, SynthParams* synthParams={}):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA, synthParams),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF, synthParams), mResonantFilter(sampleRate, synthParams),mResonantFilter2(sampleRate, synthParams){
         mSampleRate = sampleRate;
-        mOsc1 =SawtoothOscillator();
-        mOsc2 =SawtoothOscillator();
+        mOsc1 =SawtoothOscillator(sampleRate, synthParams);
+        mOsc2 =SawtoothOscillator(sampleRate, synthParams);
+        mSynthParams = synthParams;
     }
 
     inline double Oscillator2MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        double detune = synthParams.detune/100.0f;
-        double pitchBend = (synthParams.pitch_bend - 0x40) * 12.0 / 0x40;
+        double detune = mSynthParams->detune/100.0f;
+        double pitchBend = (mSynthParams->pitch_bend - 0x40) * 12.0 / 0x40;
         
         // pitch bend is 0x00 -> 0x40 -> 0x7F
         // this allows for 64 values below middle
@@ -38,7 +39,7 @@ public:
 
     inline double Oscillator1MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        double pitchBend = (synthParams.pitch_bend - 0x40) * 12.0 / 0x40;
+        double pitchBend = (mSynthParams->pitch_bend - 0x40) * 12.0 / 0x40;
 //        printf("%lf\n", pitchBend);
         return (kMiddleA / 32.0) * pow(2, (((note+pitchBend) - 9.0) / 12.0));
 //        return (kMiddleA / 32.0) * pow(2, (((note) - 9.0) / 12.0));
@@ -117,6 +118,7 @@ private:
     ADSREnvelope mVCFEnv;
     BiquadFilter mResonantFilter;
     BiquadFilter mResonantFilter2;
+    SynthParams* mSynthParams;
 //    KarlsenFastLadderFilter mKarlsenFastLadderFilter;
 //    KarlsenLPF mKarlsenLPF;
 };
