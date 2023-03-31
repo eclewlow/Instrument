@@ -77,6 +77,13 @@ public:
         }
     }
     
+    void allNotesOff() {
+        std::list<Voice>::iterator it;
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).noteOff(0);
+        }
+    }
+    
     void noteOff(int note) {
         std::list<Voice>::iterator it;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {

@@ -17,13 +17,6 @@ public:
         mSampleRate = sampleRate;
         mSynthParams = synthParams;
     }
-    
-    typedef enum {
-        OSCILLATOR_MODE_SINE = 0,
-        OSCILLATOR_MODE_SAW = 1,
-        OSCILLATOR_MODE_SQUARE = 2
-    } OscillatorMode;
-
 
     void setFrequency(double frequency) {
         mDeltaOmega = frequency / mSampleRate;
@@ -62,18 +55,18 @@ public:
         double value = 0.0; // Init output to avoid nasty surprises
         double t = mOmega; // Define half phase
         
-        if (mOscillatorMode == OSCILLATOR_MODE_SINE)
+        if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SINE)
         {
             value = std::sin(mOmega * (std::numbers::pi_v<double> * 2.0));
         }
         
-        else if (mOscillatorMode == OSCILLATOR_MODE_SAW)
+        else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SAW)
         {
           value = (2.0 * mOmega) - 1.0; // Render naive waveshape
           value -= poly_blep(t); // Layer output of Poly BLEP on top
         }
         
-        else if (mOscillatorMode == OSCILLATOR_MODE_SQUARE)
+        else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SQUARE)
         {
           if (mOmega < 0.5)
           {
@@ -100,6 +93,5 @@ private:
     double mOmega = { 0.0 };
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };
-    OscillatorMode mOscillatorMode = OSCILLATOR_MODE_SAW;
     SynthParams *mSynthParams;
 };

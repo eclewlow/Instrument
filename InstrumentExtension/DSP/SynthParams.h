@@ -8,6 +8,12 @@
 #ifndef SynthParams_h
 #define SynthParams_h
 
+enum OscillatorMode {
+    OSCILLATOR_MODE_SINE = 0,
+    OSCILLATOR_MODE_SAW = 1,
+    OSCILLATOR_MODE_SQUARE = 2
+};
+
 typedef struct SynthParams {
     float vca_attack = 10.0;
     float vca_decay = 0.0;
@@ -28,6 +34,8 @@ typedef struct SynthParams {
     float detune = 0.0;
     
     uint8 pitch_bend = 0x40;
+    
+    OscillatorMode oscillator_mode = OSCILLATOR_MODE_SAW;
     
     bool recompute_frequency = false;
 } SynthParams;

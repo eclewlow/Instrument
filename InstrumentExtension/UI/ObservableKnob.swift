@@ -39,13 +39,19 @@ struct ObservableKnob: View {
         }
     }
     var body: some View {
-        VStack {
-            KnobView(param: param, scale: scale).tickStyle(count: 5, offset: 0.0, length: 0.1, width: 5.0, color: Color(red: 0.25, green: 0.25, blue: 0.25))
+//        var c:Color = Color(red: 0.25, green: 0.25, blue: 0.25)
+        var foregroundColor:Color = Color(red: 1, green: 1, blue: 1)
+        var tickColor:Color = Color(red: 0.25, green: 0.25, blue: 0.25)
+        return VStack {
+            KnobView(param: param, scale: scale).tickStyle(count: 5, offset: 0.0, length: 0.1, width: 5.0, color: tickColor)
                 .accessibilityIdentifier("delay knob")
                 .frame(minWidth: 40, maxWidth: 240, minHeight: 40, maxHeight: 240)
                 .aspectRatio(1.0, contentMode: .fit)
-                .overlay(Text("\(param.value, specifier: specifier)").foregroundColor(Color(red: 0.25, green: 0.25, blue: 0.25)).disabled(true).allowsHitTesting(false))
-            Text("\(param.displayName)").foregroundColor(Color(red: 0.25, green: 0.25, blue: 0.25))
+                .overlay(Text("\(param.value, specifier: specifier)")
+                    .foregroundColor(foregroundColor)
+                    .disabled(true).allowsHitTesting(false))
+            Text("\(param.displayName)")
+                .foregroundColor(foregroundColor)
         }
     }
     

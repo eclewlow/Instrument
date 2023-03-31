@@ -92,6 +92,10 @@
 
 #pragma mark - AUAudioUnit Overrides
 
+- (void)reset {
+    _kernel.reset();
+}
+
 - (AUAudioFrameCount)maximumFramesToRender {
     return _kernel.maximumFramesToRender();
 }

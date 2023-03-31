@@ -28,7 +28,8 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     vcf_sustain,
     vcf_release,
     vcf_envelope_amount,
-    vcf_keyboard_tracking_amount
+    vcf_keyboard_tracking_amount,
+    oscillator_mode
 };
 
 #ifdef __cplusplus

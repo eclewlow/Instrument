@@ -8,6 +8,14 @@
 import Foundation
 import AudioToolbox
 
+enum OscillatorMode:Float {
+    case OSCILLATOR_MODE_START = -1
+    case OSCILLATOR_MODE_SINE = 0
+    case OSCILLATOR_MODE_SAW = 1
+    case OSCILLATOR_MODE_SQUARE = 2
+    case OSCILLATOR_MODE_END = 3
+}
+
 let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
     ParameterGroupSpec(identifier: "global", name: "Global") {
         ParameterSpec(
@@ -121,6 +129,14 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             units: .linearGain,
             valueRange: 0.0...1.0,
             defaultValue: 0.0
+        );
+        ParameterSpec(
+            address: .oscillator_mode,
+            identifier: "oscillator_mode",
+            name: "Oscillator Mode",
+            units: .customUnit,
+            valueRange: OscillatorMode.OSCILLATOR_MODE_START.rawValue...OscillatorMode.OSCILLATOR_MODE_END.rawValue,
+            defaultValue: OscillatorMode.OSCILLATOR_MODE_SAW.rawValue
         );
 
     }

@@ -89,6 +89,9 @@ public:
             case InstrumentExtensionParameterAddress::vcf_keyboard_tracking_amount:
                 synthParams.vcf_keyboard_tracking_amount = value;
                 break;
+            case InstrumentExtensionParameterAddress::oscillator_mode:
+                synthParams.oscillator_mode = (OscillatorMode)value;
+                break;
         }
     }
     
@@ -124,6 +127,8 @@ public:
                 return (AUValue) synthParams.vcf_envelope_amount;
             case InstrumentExtensionParameterAddress::vcf_keyboard_tracking_amount:
                 return (AUValue) synthParams.vcf_keyboard_tracking_amount;
+            case InstrumentExtensionParameterAddress::oscillator_mode:
+                return (AUValue) synthParams.oscillator_mode;
             default: return 0.f;
         }
     }
@@ -151,6 +156,11 @@ public:
         constexpr auto kMiddleA = 440.0;
         return (kMiddleA / 32.0) * pow(2, ((note - 9) / 12.0));
     }
+    
+    inline void reset() {
+        mVoiceManager.allNotesOff();
+    }
+
     
     /**
      MARK: - Internal Process
@@ -222,6 +232,8 @@ public:
         auto visitor = [] (void* context, MIDITimeStamp timeStamp, MIDIUniversalMessage message) {
             auto thisObject = static_cast<InstrumentExtensionDSPKernel *>(context);
             
+//            printf("voice message = %x\n", message.channelVoice2.status);
+
             switch (message.type) {
                 case kMIDIMessageTypeChannelVoice2: {
                     thisObject->handleMIDI2VoiceMessage(message);
@@ -254,14 +266,42 @@ public:
     }
     void handleMIDI2VoiceMessage(const struct MIDIUniversalMessage& message) {
         const auto& note = message.channelVoice2.note;
-        
+/*
+ kMIDICVStatusProgramChange        =    0xC,
+ kMIDICVStatusChannelPressure    =    0xD,
+ kMIDICVStatusPitchBend            =    0xE,
+
+ // MIDI 2.0
+ kMIDICVStatusRegisteredPNC            =     0x0, // Per-Note Controller
+ kMIDICVStatusAssignablePNC            =    0x1,
+ kMIDICVStatusRegisteredControl        =    0x2, // Registered Parameter Number (RPN)
+ */
         switch (message.channelVoice2.status) {
+            case kMIDICVStatusRegisteredControl: {
+            }
+                break;
+            case kMIDICVStatusProgramChange: {
+//                printf("program change bank = %x\n", message.channelVoice2.programChange.bank);
+//                printf("program change program = %x\n", message.channelVoice2.programChange.program);
+//                printf("program change options= %x\n", message.channelVoice2.programChange.options);
+//                mVoiceManager.allNotesOff();
+            }
+                break;
+            case kMIDICVStatusControlChange: {
+//                printf("control change index= %x\n", message.channelVoice2.controlChange.index);
+//                printf("control change data= %x\n", message.channelVoice2.controlChange.data);
+            }
+                break;
+                
             case kMIDICVStatusNoteOff: {
+//                printf("note off = %x\n", note.number);
                 mVoiceManager.noteOff(note.number);
             }
                 break;
                 
             case kMIDICVStatusNoteOn: {
+//                printf("note on = %x\n", note.number);
+
                 mVoiceManager.noteOn(note.number);
                 synthParams.recompute_frequency = true;
             }
