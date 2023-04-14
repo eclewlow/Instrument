@@ -17,37 +17,39 @@ struct ContentView: View {
     
     var body: some View {
         return VStack() {
-            Text("\(hostModel.viewModel.title )")
-                .textSelection(.enabled)
-                .padding()
-            VStack(alignment: .center) {
+//            Text("\(hostModel.viewModel.title )")
+//                .textSelection(.enabled)
+//                .padding()
+            VStack {
                 if let viewController = hostModel.viewModel.viewController {
                     AUViewControllerUI(viewController: viewController)
-                        .padding(margin)
+//                        .padding(margin)
                 } else {
                     VStack() {
                         Text(hostModel.viewModel.message)
-                            .padding()
+//                            .padding()
                     }
-                    .frame(minWidth: 400, minHeight: 200)
+//                    .frame(minWidth: 400, minHeight: 200)
                 }
+                
             }
-            .padding(doubleMargin)
+                
+//            .padding(doubleMargin)
             
-            if hostModel.viewModel.showAudioControls {
-                Text("Audio Playback")
-                Button {
-                    hostModel.isPlaying ? hostModel.stopPlaying() : hostModel.startPlaying()
-                    
-                } label: {
-                    Text(hostModel.isPlaying ? "Stop" : "Play")
-                }
-            }
-            if hostModel.viewModel.showMIDIContols {
-                Text("MIDI Input: Enabled")
-            }
-            Spacer()
-                .frame(height: margin)
+//            if hostModel.viewModel.showAudioControls {
+//                Text("Audio Playback")
+//                Button {
+//                    hostModel.isPlaying ? hostModel.stopPlaying() : hostModel.startPlaying()
+//
+//                } label: {
+//                    Text(hostModel.isPlaying ? "Stop" : "Play")
+//                }
+//            }
+//            if hostModel.viewModel.showMIDIContols {
+//                Text("MIDI Input: Enabled")
+//            }
+//            Spacer()
+//                .frame(height: margin)
         }
     }
 }

@@ -11,7 +11,9 @@
 enum OscillatorMode {
     OSCILLATOR_MODE_SINE = 0,
     OSCILLATOR_MODE_SAW = 1,
-    OSCILLATOR_MODE_SQUARE = 2
+    OSCILLATOR_MODE_SQUARE = 2,
+    OSCILLATOR_MODE_TRIANGLE = 3,
+    OSCILLATOR_MODE_FM = 4
 };
 
 typedef struct SynthParams {
@@ -36,6 +38,10 @@ typedef struct SynthParams {
     uint8 pitch_bend = 0x40;
     
     OscillatorMode oscillator_mode = OSCILLATOR_MODE_SAW;
+    
+    float fm_ratio = 1.0;
+    
+    float fm_gain = 0.0;
     
     bool recompute_frequency = false;
 } SynthParams;

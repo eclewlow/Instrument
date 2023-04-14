@@ -91,6 +91,14 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::oscillator_mode:
                 synthParams.oscillator_mode = (OscillatorMode)value;
+                synthParams.recompute_frequency = true;
+                break;
+            case InstrumentExtensionParameterAddress::fm_ratio:
+                synthParams.fm_ratio = value;
+                synthParams.recompute_frequency = true;
+                break;
+            case InstrumentExtensionParameterAddress::fm_gain:
+                synthParams.fm_gain = value;
                 break;
         }
     }
@@ -129,6 +137,10 @@ public:
                 return (AUValue) synthParams.vcf_keyboard_tracking_amount;
             case InstrumentExtensionParameterAddress::oscillator_mode:
                 return (AUValue) synthParams.oscillator_mode;
+            case InstrumentExtensionParameterAddress::fm_ratio:
+                return (AUValue) synthParams.fm_ratio;
+            case InstrumentExtensionParameterAddress::fm_gain:
+                return (AUValue) synthParams.fm_gain;
             default: return 0.f;
         }
     }

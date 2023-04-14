@@ -13,7 +13,9 @@ enum OscillatorMode:Float {
     case OSCILLATOR_MODE_SINE = 0
     case OSCILLATOR_MODE_SAW = 1
     case OSCILLATOR_MODE_SQUARE = 2
-    case OSCILLATOR_MODE_END = 3
+    case OSCILLATOR_MODE_TRIANGLE = 3
+    case OSCILLATOR_MODE_FM = 4
+    case OSCILLATOR_MODE_END = 5
 }
 
 let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
@@ -137,6 +139,25 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             units: .customUnit,
             valueRange: OscillatorMode.OSCILLATOR_MODE_START.rawValue...OscillatorMode.OSCILLATOR_MODE_END.rawValue,
             defaultValue: OscillatorMode.OSCILLATOR_MODE_SAW.rawValue
+        );
+        ParameterSpec(
+            address: .fm_ratio,
+            identifier: "fm_ratio",
+            name: "FM Ratio",
+            units: .ratio,
+            valueRange: 0.03125...32.0,
+            defaultValue: 1.0
+//            units: .decibels,
+//            valueRange: 1...32,
+//            defaultValue: 1
+        );
+        ParameterSpec(
+            address: .fm_gain,
+            identifier: "fm_gain",
+            name: "FM Gain",
+            units: .linearGain,
+            valueRange: 0.0...1.0,
+            defaultValue: 0.0
         );
 
     }
