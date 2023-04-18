@@ -100,6 +100,9 @@ public:
             case InstrumentExtensionParameterAddress::fm_gain:
                 synthParams.fm_gain = value;
                 break;
+            case InstrumentExtensionParameterAddress::fm_feedback:
+                synthParams.fm_feedback = value;
+                break;
         }
     }
     
@@ -141,6 +144,8 @@ public:
                 return (AUValue) synthParams.fm_ratio;
             case InstrumentExtensionParameterAddress::fm_gain:
                 return (AUValue) synthParams.fm_gain;
+            case InstrumentExtensionParameterAddress::fm_feedback:
+                return (AUValue) synthParams.fm_feedback;
             default: return 0.f;
         }
     }

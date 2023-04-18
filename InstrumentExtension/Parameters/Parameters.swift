@@ -159,6 +159,14 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             valueRange: 0.0...1.0,
             defaultValue: 0.0
         );
+        ParameterSpec(
+            address: .fm_feedback,
+            identifier: "fm_feedback",
+            name: "FM Feedback",
+            units: .linearGain,
+            valueRange: -1.0...1.0,
+            defaultValue: 0.0
+        );
 
     }
 }

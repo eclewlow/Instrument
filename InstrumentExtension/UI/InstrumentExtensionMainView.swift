@@ -93,6 +93,7 @@ struct InstrumentExtensionMainView: View {
                 HStack{
                     ObservableKnob(param: parameterTree.global.fm_ratio)
                     ObservableKnob(param: parameterTree.global.fm_gain)
+                    ObservableKnob(param: parameterTree.global.fm_feedback)
                 }
             }
         }

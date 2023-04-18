@@ -21,7 +21,8 @@ public:
             target_ = target;
             tick_ = 0;
             increment_ = (target - current) / size;
-        } else if(tick_ >= size) {
+            size_ = size;
+        } else if(tick_ >= size_) {
             increment_ = 0;
         }
     }
@@ -37,6 +38,7 @@ private:
     float value_;
     float increment_;
     float target_;
+    size_t size_;
     uint32_t tick_;
 };
 

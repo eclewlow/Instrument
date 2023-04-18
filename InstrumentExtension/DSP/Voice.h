@@ -64,14 +64,17 @@ public:
             // modulator_freq * (1+feedback * feedback * 0.5 * previous sample)
             // modulator phase actually gets incremented
             // then modulator feedback, phase temporarily incfemented by 0.25 * feedback *feedback * previous_sample
-            float feedback = -1.0;
-            float modulator_fb = feedback > 0.0f ? 0.25f * feedback * feedback : 0.0f;
-            float phase_feedback = feedback < 0.0f ? 0.5f * feedback * feedback : 0.0f;
             
             fm_frequency.Update(fm_gain_, mSynthParams->fm_gain, 24);
+            fm_feedback.Update(fm_feedback_, mSynthParams->fm_feedback, 24);
             
             fm_gain_ += fm_frequency.Next();
-            
+            fm_feedback_ += fm_feedback.Next();
+            float feedback = fm_feedback_;
+
+            float modulator_fb = feedback > 0.0f ? 0.25f * feedback * feedback : 0.0f;
+            float phase_feedback = feedback < 0.0f ? 0.5f * feedback * feedback : 0.0f;
+
             oscillatorOutput = mOsc1.process((previous_sample_ * phase_feedback) + (previous_sample_ * modulator_fb));
             oscillatorOutput = mOsc2.process(oscillatorOutput * fm_gain_);
             
@@ -140,11 +143,13 @@ private:
     double mSampleRate = { 0.0 };
     int mNote;
     double mFrequency = {0.0f};
-    float fm_gain_ = 0.0;
-    float fm_feedback_gain_ = 0.0;
     float previous_sample_ = 0.0;
     
+    float fm_gain_ = 0.0;
+    float fm_feedback_ = 0.0;
+
     ParameterInterpolator fm_frequency;
+    ParameterInterpolator fm_feedback;
     
     Oscillator mOsc1;
     Oscillator mOsc2;

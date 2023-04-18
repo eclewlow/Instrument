@@ -42,7 +42,8 @@ typedef struct SynthParams {
     float fm_ratio = 1.0;
     
     float fm_gain = 0.0;
-    
+    float fm_feedback = 0.0;
+
     bool recompute_frequency = false;
 } SynthParams;
 
