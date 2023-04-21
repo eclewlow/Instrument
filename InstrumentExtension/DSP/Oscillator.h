@@ -72,14 +72,10 @@ public:
         
         else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SAW)
         {
-            //            value = (2.0 * mOmega) - 1.0; // Render naive waveshape
-            //            value -= poly_blep(t); // Layer output of Poly BLEP on top
             float tempPhase = mOmega;
             
             float this_sample = next_sample;
             next_sample = 0.0f;
-            
-            //            const float frequency = fm.Next();
             
             tempPhase += mDeltaOmega;
             
@@ -91,19 +87,40 @@ public:
             }
             
             next_sample += tempPhase;
-            value += (2.0f * this_sample - 1.0f) * 1.0;
+            value = (2.0f * this_sample - 1.0f) * 1.0;
             
         }
         else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SQUARE)
         {
-            if (mOmega < 0.5)
-            {
-                value = 1.0; // Flip
-            } else {
-                value = -1.0; // Flop
+            float tempPhase = mOmega;
+            
+            float this_sample = next_sample;
+            next_sample = 0.0f;
+            
+            tempPhase += mDeltaOmega;
+            
+            float pulse_width = mSynthParams->pulse_width / 100.0; // 0.5
+            
+            if (!high_) {
+                if (tempPhase >= pulse_width) {
+                    float t = (tempPhase - pulse_width) / mDeltaOmega;
+                    this_sample += ThisBlepSample(t);
+                    next_sample += NextBlepSample(t);
+                    high_ = true;
+                }
             }
-            value += poly_blep(t); // Layer output of Poly BLEP on top (flip)
-            value -= poly_blep(fmod(t + 0.5, 1.0)); // Layer output of Poly BLEP on top (flop)
+            if (high_) {
+                if (tempPhase >= 1.0f) {
+                    tempPhase -= 1.0f;
+                    float t = tempPhase / mDeltaOmega;
+                    this_sample -= ThisBlepSample(t);
+                    next_sample -= NextBlepSample(t);
+                    high_ = false;
+                }
+            }
+            
+            next_sample += tempPhase < pulse_width ? -1.0 : 1.0;
+            value = this_sample;
         }
         
         else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_TRIANGLE)
@@ -125,7 +142,7 @@ public:
         {
             value = std::sin((mOmega + fm_sample) * (std::numbers::pi_v<double> * 2.0));
         }
-
+        
         return value; // Output
     }
     double process(double fm_input = 0.0) {
@@ -145,5 +162,6 @@ private:
     double mSampleRate = { 0.0 };
     double lastOutput = 0.0;
     float next_sample=0.0;
+    bool high_ = false;
     SynthParams *mSynthParams;
 };

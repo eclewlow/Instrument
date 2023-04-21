@@ -103,6 +103,9 @@ public:
             case InstrumentExtensionParameterAddress::fm_feedback:
                 synthParams.fm_feedback = value;
                 break;
+            case InstrumentExtensionParameterAddress::pulse_width:
+                synthParams.pulse_width = value;
+                break;
         }
     }
     
@@ -146,6 +149,8 @@ public:
                 return (AUValue) synthParams.fm_gain;
             case InstrumentExtensionParameterAddress::fm_feedback:
                 return (AUValue) synthParams.fm_feedback;
+            case InstrumentExtensionParameterAddress::pulse_width:
+                return (AUValue) synthParams.pulse_width;
             default: return 0.f;
         }
     }

@@ -32,7 +32,8 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     oscillator_mode,
     fm_ratio,
     fm_gain,
-    fm_feedback
+    fm_feedback,
+    pulse_width
 };
 
 #ifdef __cplusplus

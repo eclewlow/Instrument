@@ -95,6 +95,9 @@ struct InstrumentExtensionMainView: View {
                     ObservableKnob(param: parameterTree.global.fm_gain)
                     ObservableKnob(param: parameterTree.global.fm_feedback)
                 }
+                HStack{
+                    ObservableKnob(param: parameterTree.global.pulse_width)
+                }
             }
         }
         

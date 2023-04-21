@@ -34,6 +34,8 @@ struct ObservableKnob: View {
             return "%.0f ms"
         case .decibels:
             return "%.0f dB"
+        case .percent:
+            return "%.0f %%"
         default:
             return "%.2f"
         }

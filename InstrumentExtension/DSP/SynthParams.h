@@ -43,6 +43,8 @@ typedef struct SynthParams {
     
     float fm_gain = 0.0;
     float fm_feedback = 0.0;
+    
+    float pulse_width = 50;
 
     bool recompute_frequency = false;
 } SynthParams;

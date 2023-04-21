@@ -167,6 +167,14 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             valueRange: -1.0...1.0,
             defaultValue: 0.0
         );
+        ParameterSpec(
+            address: .pulse_width,
+            identifier: "pulse_width",
+            name: "Pulse Width",
+            units: .percent,
+            valueRange: 0.0...100.0,
+            defaultValue: 50
+        );
 
     }
 }
