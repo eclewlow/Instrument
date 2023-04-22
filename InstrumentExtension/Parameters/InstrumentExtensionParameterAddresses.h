@@ -20,7 +20,7 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     vca_decay,
     vca_sustain,
     vca_release,
-    detune,
+    fine_tune,
     cutoff,
     resonance,
     vcf_attack,
@@ -33,7 +33,9 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     fm_ratio,
     fm_gain,
     fm_feedback,
-    pulse_width
+    pulse_width,
+    hard_sync,
+    coarse_tune
 };
 
 #ifdef __cplusplus

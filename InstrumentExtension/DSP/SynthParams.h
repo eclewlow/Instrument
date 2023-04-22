@@ -33,8 +33,9 @@ typedef struct SynthParams {
     float cutoff = 8500.0;
     float resonance = -8.0;
 
-    float detune = 0.0;
-    
+    float fine_tune = 0.0;
+    float coarse_tune = 0.0;
+
     uint8 pitch_bend = 0x40;
     
     OscillatorMode oscillator_mode = OSCILLATOR_MODE_SAW;
@@ -45,6 +46,8 @@ typedef struct SynthParams {
     float fm_feedback = 0.0;
     
     float pulse_width = 50;
+    
+    bool hard_sync = false;
 
     bool recompute_frequency = false;
 } SynthParams;

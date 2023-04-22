@@ -10,16 +10,28 @@ import SwiftUI
 struct InstrumentExtensionMainView: View {
     var parameterTree: ObservableAUParameterGroup
     
-    @State private var selectedColor = "Red"
-    @State private var isOn = true
-    @State private var sawSelected = false
-    @State private var squareSelected = false
+//    @State private var hardSyncOn: Bool { parameterTree.global.hard_sync }
+
+//    @State private var binding: Bool {
+//        get { return parameterTree.global.hard_sync.value == AUValue(1) }
+//        set { if !newValue { parameterTree.global.hard_sync.value = AUValue(1) }else {
+//            parameterTree.global.hard_sync.value = AUValue(0)
+//        } }
+//    }
     
     var body: some View {
         //        return VStack {
         //
         //            Text("hi").position(x:100, y:100).foregroundColor(Color.black)
         //        }
+//        let binding = Binding<Bool>(get: { parameterTree.global.hard_sync.value == AUValue(1) }, set: {
+//            if $0 {
+//                parameterTree.global.hard_sync.value = AUValue(1)
+//            } else {
+//                parameterTree.global.hard_sync.value = AUValue(0)
+//            }
+//        })
+
         return VStack {
             VStack {
                 HStack{
@@ -60,6 +72,7 @@ struct InstrumentExtensionMainView: View {
                         Text("FM")
                     })
                     .buttonStyle(.borderedProminent).tint(.mint)
+                    ObservableToggle(param: parameterTree.global.hard_sync)
                 }
                 HStack{
                     VStack {
@@ -86,7 +99,8 @@ struct InstrumentExtensionMainView: View {
                     }
                     ObservableKnob(param: parameterTree.global.vcf_envelope_amount)
                     ObservableKnob(param: parameterTree.global.vcf_keyboard_tracking_amount)
-                    ObservableKnob(param: parameterTree.global.detune)
+                    ObservableKnob(param: parameterTree.global.fine_tune)
+                    ObservableKnob(param: parameterTree.global.coarse_tune)
                     ObservableKnob(param: parameterTree.global.cutoff, scale: Knob.Scale.logarithmic)
                     ObservableKnob(param: parameterTree.global.resonance)
                 }

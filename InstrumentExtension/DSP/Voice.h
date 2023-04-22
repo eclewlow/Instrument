@@ -27,14 +27,15 @@ public:
     
     inline double Oscillator2MIDINoteToFrequency(double note) {
         constexpr auto kMiddleA = 440.0;
-        double detune = mSynthParams->detune/100.0f;
+        double fine_tune = mSynthParams->fine_tune/100.0f;
+        double coarse_tune = mSynthParams->coarse_tune/100.0f;
         double pitchBend = (mSynthParams->pitch_bend - 0x40) * 12.0 / 0x40;
         
         // pitch bend is 0x00 -> 0x40 -> 0x7F
         // this allows for 64 values below middle
         // and allows for 63 values above middle,
         // including the middle this totals to 128 possible values
-        return (kMiddleA / 32.0) * pow(2, (((note+detune+pitchBend) - 9.0) / 12.0));
+        return (kMiddleA / 32.0) * pow(2, (((note+fine_tune+coarse_tune+pitchBend) - 9.0) / 12.0));
     }
     
     inline double Oscillator1MIDINoteToFrequency(double note) {
@@ -81,7 +82,19 @@ public:
             previous_sample_ += 0.05 * (oscillatorOutput - previous_sample_);
             
         } else {
-            oscillatorOutput = mOsc1.process() + mOsc2.process();
+            
+            float syncin;
+            float syncout;
+            
+            syncin = -1.0;
+            syncout = -1.0;
+            
+            oscillatorOutput = mOsc1.process(0.0, &syncin, &syncout);
+            
+            syncin = syncout;
+            syncout = -1.0;
+            
+            oscillatorOutput += mOsc2.process(0.0, &syncin, &syncout);
         }
         
         float vcfEnvelopeControlVoltage = mVCFEnv.process();

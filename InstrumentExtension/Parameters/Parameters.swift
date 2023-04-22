@@ -29,9 +29,17 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             defaultValue: 0.25
         );
         ParameterSpec(
-            address: .detune,
-            identifier: "detune",
-            name: "Oscillator 2 Detune",
+            address: .coarse_tune,
+            identifier: "coarse_tune",
+            name: "OSC 2 Coarse Tune",
+            units: .cents,
+            valueRange: -3600...3600,
+            defaultValue: 0
+        );
+        ParameterSpec(
+            address: .fine_tune,
+            identifier: "fine_tune",
+            name: "OSC 2 Fine Tune",
             units: .cents,
             valueRange: -100...100,
             defaultValue: 0
@@ -174,6 +182,14 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             units: .percent,
             valueRange: 0.0...100.0,
             defaultValue: 50
+        );
+        ParameterSpec(
+            address: .hard_sync,
+            identifier: "hard_sync",
+            name: "Hard Sync",
+            units: .boolean,
+            valueRange: 0...1,
+            defaultValue: 0
         );
 
     }

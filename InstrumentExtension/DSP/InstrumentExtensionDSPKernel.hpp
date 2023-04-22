@@ -79,8 +79,12 @@ public:
             case InstrumentExtensionParameterAddress::resonance:
                 synthParams.resonance = value;
                 break;
-            case InstrumentExtensionParameterAddress::detune:
-                synthParams.detune = value;
+            case InstrumentExtensionParameterAddress::fine_tune:
+                synthParams.fine_tune = value;
+                synthParams.recompute_frequency = true;
+                break;
+            case InstrumentExtensionParameterAddress::coarse_tune:
+                synthParams.coarse_tune = value;
                 synthParams.recompute_frequency = true;
                 break;
             case InstrumentExtensionParameterAddress::vcf_envelope_amount:
@@ -105,6 +109,9 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::pulse_width:
                 synthParams.pulse_width = value;
+                break;
+            case InstrumentExtensionParameterAddress::hard_sync:
+                synthParams.hard_sync = value;
                 break;
         }
     }
@@ -131,8 +138,10 @@ public:
                 return (AUValue) synthParams.vcf_sustain;
             case InstrumentExtensionParameterAddress::vcf_release:
                 return (AUValue) synthParams.vcf_release;
-            case InstrumentExtensionParameterAddress::detune:
-                return (AUValue) synthParams.detune;
+            case InstrumentExtensionParameterAddress::fine_tune:
+                return (AUValue) synthParams.fine_tune;
+            case InstrumentExtensionParameterAddress::coarse_tune:
+                return (AUValue) synthParams.coarse_tune;
             case InstrumentExtensionParameterAddress::cutoff:
                 return (AUValue) synthParams.cutoff;
             case InstrumentExtensionParameterAddress::resonance:
@@ -151,6 +160,8 @@ public:
                 return (AUValue) synthParams.fm_feedback;
             case InstrumentExtensionParameterAddress::pulse_width:
                 return (AUValue) synthParams.pulse_width;
+            case InstrumentExtensionParameterAddress::hard_sync:
+                return (AUValue) synthParams.hard_sync;
             default: return 0.f;
         }
     }
