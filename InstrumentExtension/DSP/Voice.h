@@ -83,18 +83,34 @@ public:
             
         } else {
             
+            fm_frequency.Update(fm_gain_, mSynthParams->fm_gain, 24);
+            fm_feedback.Update(fm_feedback_, mSynthParams->fm_feedback, 24);
+            
+            fm_gain_ += fm_frequency.Next();
+            fm_feedback_ += fm_feedback.Next();
+            float feedback = fm_feedback_;
+
+            float modulator_fb = feedback > 0.0f ? 0.25f * feedback * feedback : 0.0f;
+            float phase_feedback = feedback < 0.0f ? 0.5f * feedback * feedback : 0.0f;
+
+            
             float syncin;
             float syncout;
             
             syncin = -1.0;
             syncout = -1.0;
             
-            oscillatorOutput = mOsc1.process(0.0, &syncin, &syncout);
+            oscillatorOutput = mOsc1.process((previous_sample_ * phase_feedback) + (previous_sample_ * modulator_fb), &syncin, &syncout);
             
             syncin = syncout;
             syncout = -1.0;
             
-            oscillatorOutput += mOsc2.process(0.0, &syncin, &syncout);
+            if(fm_gain_ > 0.0)
+                oscillatorOutput = mOsc2.process(oscillatorOutput * fm_gain_, &syncin, &syncout);
+            else
+                oscillatorOutput += mOsc2.process(0.0, &syncin, &syncout);
+
+            previous_sample_ += 0.05 * (oscillatorOutput - previous_sample_);
         }
         
         float vcfEnvelopeControlVoltage = mVCFEnv.process();
@@ -116,7 +132,7 @@ public:
         } else {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq);
+            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
             mOsc2.setFrequency(osc2freq);
         }
         mVCAEnv.noteOn();
@@ -137,7 +153,7 @@ public:
         } else {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq);
+            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
             mOsc2.setFrequency(osc2freq);
         }
     }

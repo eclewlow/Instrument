@@ -33,7 +33,7 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             identifier: "coarse_tune",
             name: "OSC 2 Coarse Tune",
             units: .cents,
-            valueRange: -3600...3600,
+            valueRange: -1200...1200,
             defaultValue: 0
         );
         ParameterSpec(

@@ -67,7 +67,7 @@ public:
         
         if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SINE)
         {
-            value = std::sin(mOmega * (std::numbers::pi_v<double> * 2.0));
+            value = std::sin((mOmega+fm_sample) * (std::numbers::pi_v<double> * 2.0));
             
             mOmega += mDeltaOmega;
             
@@ -81,49 +81,54 @@ public:
             
             float this_sample = next_sample;
             next_sample = 0.0f;
-            
-            tempPhase += mDeltaOmega;
-            mOmega = tempPhase;
+                        
+            bool transition_during_reset = false;
+            bool sync_reset = false;
+            bool self_reset = false;
             
             if (mSynthParams->hard_sync == 1 &&  syncin != NULL && *syncin >= 0.0) {
                 
-                tempPhase = (*syncin) * mDeltaOmega;
-                float t = tempPhase / mDeltaOmega;
+                float reset_time = *syncin;
+                sync_reset = true;
                 
-                mOmega = tempPhase;
-                
-                if(syncout != NULL) {
-                    *syncout = t;
+                float phase_at_reset = tempPhase + (1.0 - reset_time) * mDeltaOmega;
+                if (phase_at_reset < tempPhase) {
+                  transition_during_reset = true;
                 }
-
-                this_sample -= ThisBlepSample(t);
-                next_sample -= NextBlepSample(t);
+                float discontinuity = phase_at_reset;
+                
+                this_sample -= discontinuity * ThisBlepSample(reset_time);
+                next_sample -= discontinuity * NextBlepSample(reset_time);
             }
 
-            if (tempPhase < mDeltaOmega) {
-                float t = tempPhase / mDeltaOmega;
-                if(syncout != NULL) {
-                    *syncout = t;
-                }
-                this_sample -= ThisBlepSample(t);
-                next_sample -= NextBlepSample(t);
-            }
-
-            if (tempPhase >= 1.0f) {
+            tempPhase += mDeltaOmega;
+            if(tempPhase >= 1.0f) {
                 tempPhase -= 1.0f;
+                self_reset = true;
+            }
+            mOmega = tempPhase;
+            
+            if(syncout != NULL) {
+                if(tempPhase < mDeltaOmega) {
+                    *syncout = tempPhase / mDeltaOmega;
+                }
+            }
 
-                mOmega = tempPhase;
+            
+            if (self_reset && (transition_during_reset || !sync_reset)) {
 
                 float t = tempPhase / mDeltaOmega;
-                if(syncout != NULL) {
-                    *syncout = t;
-                }
                 this_sample -= ThisBlepSample(t);
                 next_sample -= NextBlepSample(t);
             }
             
+            if(sync_reset) {
+                tempPhase = *syncin * mDeltaOmega;
+                mOmega = tempPhase;
+            }
             
-            next_sample += tempPhase;
+            
+            next_sample += (tempPhase + fm_sample);
             value = (2.0f * this_sample - 1.0f) * 1.0;
             
         }
@@ -158,7 +163,7 @@ public:
                 }
             }
             
-            next_sample += tempPhase < pulse_width ? -1.0 : 1.0;
+            next_sample += (tempPhase + fm_sample) < pulse_width ? -1.0 : 1.0;
             value = this_sample;
         }
         
