@@ -198,15 +198,28 @@ public:
         
         return value; // Output
     }
+    
+    void reset() {
+        mOmega = 0.0;
+    }
+    
     double process(double fm_input = 0.0, float * syncin = NULL, float * syncout = NULL) {
         double sample;
         
         sample = nextSample(fm_input, syncin, syncout);
         
-        return sample;
+        bitcrush_phase += 1.0/48000.0;
+        if(bitcrush_phase >= 1.0/mSynthParams->bitcrush_rate) {
+            bitcrush_phase -= 1.0/mSynthParams->bitcrush_rate;
+            sample_hold = sample;
+        }
+
+        return sample_hold;
     }
     
 private:
+    double sample_hold = 0.0;
+    double bitcrush_phase = 0.0;
     double mOmega = { 0.0 };
     double mDeltaOmega = { 0.0 };
     double mSampleRate = { 0.0 };

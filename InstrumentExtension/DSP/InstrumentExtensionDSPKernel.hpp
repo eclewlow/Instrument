@@ -81,11 +81,11 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::fine_tune:
                 synthParams.fine_tune = value;
-                synthParams.recompute_frequency = true;
+                mVoiceManager.recomputeFrequency();
                 break;
             case InstrumentExtensionParameterAddress::coarse_tune:
                 synthParams.coarse_tune = value;
-                synthParams.recompute_frequency = true;
+                mVoiceManager.recomputeFrequency();
                 break;
             case InstrumentExtensionParameterAddress::vcf_envelope_amount:
                 synthParams.vcf_envelope_amount = value;
@@ -95,11 +95,12 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::oscillator_mode:
                 synthParams.oscillator_mode = (OscillatorMode)value;
-                synthParams.recompute_frequency = true;
+                mVoiceManager.reset();
+                mVoiceManager.recomputeFrequency();
                 break;
             case InstrumentExtensionParameterAddress::fm_ratio:
                 synthParams.fm_ratio = value;
-                synthParams.recompute_frequency = true;
+                mVoiceManager.recomputeFrequency();
                 break;
             case InstrumentExtensionParameterAddress::fm_gain:
                 synthParams.fm_gain = value;
@@ -112,6 +113,9 @@ public:
                 break;
             case InstrumentExtensionParameterAddress::hard_sync:
                 synthParams.hard_sync = value;
+                break;
+            case InstrumentExtensionParameterAddress::bitcrush_rate:
+                synthParams.bitcrush_rate = value;
                 break;
         }
     }
@@ -162,6 +166,8 @@ public:
                 return (AUValue) synthParams.pulse_width;
             case InstrumentExtensionParameterAddress::hard_sync:
                 return (AUValue) synthParams.hard_sync;
+            case InstrumentExtensionParameterAddress::bitcrush_rate:
+                return (AUValue) synthParams.bitcrush_rate;
             default: return 0.f;
         }
     }
@@ -336,7 +342,7 @@ public:
 //                printf("note on = %x\n", note.number);
 
                 mVoiceManager.noteOn(note.number);
-                synthParams.recompute_frequency = true;
+                mVoiceManager.recomputeFrequency();
             }
                 break;
             case kMIDICVStatusPitchBend: {
@@ -344,7 +350,7 @@ public:
                 uint8 pitchBend = (message.channelVoice2.pitchBend.data >> 25) & 0x7F;
 
                 synthParams.pitch_bend = pitchBend;
-                synthParams.recompute_frequency = true;
+                mVoiceManager.recomputeFrequency();
             }
                 break;
             default:

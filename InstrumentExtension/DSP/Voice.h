@@ -127,12 +127,12 @@ public:
         if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_FM) {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
+            mOsc1.setFrequency(osc1freq * (mSynthParams->fm_gain == 0.0 ? 1.0: mSynthParams->fm_ratio));
             mOsc2.setFrequency(osc2freq);
         } else {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
+            mOsc1.setFrequency(osc1freq * (mSynthParams->fm_gain == 0.0 ? 1.0: mSynthParams->fm_ratio));
             mOsc2.setFrequency(osc2freq);
         }
         mVCAEnv.noteOn();
@@ -148,14 +148,19 @@ public:
         if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_FM) {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
+            mOsc1.setFrequency(osc1freq * (mSynthParams->fm_gain == 0.0 ? 1.0: mSynthParams->fm_ratio));
             mOsc2.setFrequency(osc2freq);
         } else {
             double osc1freq = Oscillator1MIDINoteToFrequency(mNote);
             double osc2freq = Oscillator2MIDINoteToFrequency(mNote);
-            mOsc1.setFrequency(osc1freq * mSynthParams->fm_ratio);
+            mOsc1.setFrequency(osc1freq * (mSynthParams->fm_gain == 0.0 ? 1.0: mSynthParams->fm_ratio));
             mOsc2.setFrequency(osc2freq);
         }
+    }
+    
+    void reset() {
+        mOsc1.reset();
+        mOsc2.reset();
     }
     
     int getNote() const {

@@ -35,7 +35,8 @@ typedef NS_ENUM(AUParameterAddress, InstrumentExtensionParameterAddress) {
     fm_feedback,
     pulse_width,
     hard_sync,
-    coarse_tune
+    coarse_tune,
+    bitcrush_rate
 };
 
 #ifdef __cplusplus

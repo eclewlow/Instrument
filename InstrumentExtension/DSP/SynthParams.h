@@ -48,8 +48,8 @@ typedef struct SynthParams {
     float pulse_width = 50;
     
     bool hard_sync = false;
+    float bitcrush_rate = 48000.0;
 
-    bool recompute_frequency = false;
 } SynthParams;
 
 #endif /* SynthParams_h */

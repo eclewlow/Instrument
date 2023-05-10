@@ -32,22 +32,31 @@ public:
         mSampleRate = sampleRate;
         mSynthParams = synthParams;
     }
+    
+    void recomputeFrequency() {
+        std::list<Voice>::iterator it;
+
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).recomputeFrequency();
+        }
+
+    }
+    
+    void reset() {
+        std::list<Voice>::iterator it;
+        
+        for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
+            (*it).reset();
+        }
+    }
 
     double process() {
         std::list<Voice>::iterator it;
         
         double sample = 0.0f;
         for (it = mVoiceList.begin(); it!= mVoiceList.end(); it++) {
-            
-            if (mSynthParams->recompute_frequency) {
-                (*it).recomputeFrequency();
-            }
-
-            
             sample += (*it).process();
         }
-
-        mSynthParams->recompute_frequency = false;
 
         return sample;
     }

@@ -111,6 +111,7 @@ struct InstrumentExtensionMainView: View {
                 }
                 HStack{
                     ObservableKnob(param: parameterTree.global.pulse_width)
+                    ObservableKnob(param: parameterTree.global.bitcrush_rate, scale: Knob.Scale.logarithmic)
                 }
             }
         }

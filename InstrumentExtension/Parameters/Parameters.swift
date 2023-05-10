@@ -191,6 +191,14 @@ let InstrumentExtensionParameterSpecs = ParameterTreeSpec {
             valueRange: 0...1,
             defaultValue: 0
         );
+        ParameterSpec(
+            address: .bitcrush_rate,
+            identifier: "bitcrush_rate",
+            name: "Bitcrush Rate",
+            units: .hertz,
+            valueRange: 12.0...48_000.0,
+            defaultValue: 48_000.0
+        );
 
     }
 }
