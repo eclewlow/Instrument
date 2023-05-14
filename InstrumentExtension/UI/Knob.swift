@@ -27,6 +27,8 @@ open class Knob: NSControl {
     
     public var scale: Scale = Scale.logarithmic
     
+    public var defaultValue: Float = 0.0
+    
     public var rotation: Float = 0.0
     /// The minimum value reported by the control.
     public var minimumValue: Float = 0.0 { didSet { setValue(_value, animated: false) } }
@@ -299,9 +301,15 @@ extension Knob {
     }
     
     override open func mouseDown(with event: NSEvent) {
-        panOrigin = convert(event.locationInWindow, from: nil)
-        manipulating = true
-        notifyTarget()
+        if(event.clickCount == 2) {
+            self.value = self.defaultValue
+            manipulating = true
+            notifyTarget()
+        } else {
+            panOrigin = convert(event.locationInWindow, from: nil)
+            manipulating = true
+            notifyTarget()
+        }
     }
     
     override open func mouseDragged(with event: NSEvent) {

@@ -70,6 +70,8 @@ public struct KnobView: NSViewRepresentable {
         view.value = param.value
         
         view.scale = scale
+        view.defaultValue = param.defaultValue
+//        param.defaultValue
         
         view.minimumValue = minimumValue
         view.maximumValue = maximumValue

@@ -134,36 +134,38 @@ public:
         }
         else if (mSynthParams->oscillator_mode == OSCILLATOR_MODE_SQUARE)
         {
-            float tempPhase = mOmega;
-            
             float this_sample = next_sample;
             next_sample = 0.0f;
             
-            tempPhase += mDeltaOmega;
-            mOmega = tempPhase;
+            mOmega += mDeltaOmega;
+            
+            if (mOmega >= 1.0f) {
+                mOmega -= 1.0f;
+            }
+
             
             float pulse_width = mSynthParams->pulse_width / 100.0; // 0.5
+//            pulse_width = 0.5;
+//            fm_sample = 0.0;
             
             if (!high_) {
-                if (tempPhase >= pulse_width) {
-                    float t = (tempPhase - pulse_width) / mDeltaOmega;
+                if (mOmega >= pulse_width) {
+                    float t = (mOmega - pulse_width) / mDeltaOmega;
                     this_sample += ThisBlepSample(t);
                     next_sample += NextBlepSample(t);
                     high_ = true;
                 }
             }
-            if (high_) {
-                if (tempPhase >= 1.0f) {
-                    tempPhase -= 1.0f;
-                    mOmega = tempPhase;
-                    float t = tempPhase / mDeltaOmega;
+            if (high_ && mOmega < mDeltaOmega) {
+                    float t = mOmega / mDeltaOmega;
                     this_sample -= ThisBlepSample(t);
                     next_sample -= NextBlepSample(t);
                     high_ = false;
-                }
             }
             
-            next_sample += (tempPhase + fm_sample) < pulse_width ? -1.0 : 1.0;
+            
+            next_sample += (mOmega + fm_sample) < pulse_width ? 0.0 : 1.0;
+            
             value = this_sample;
         }
         
@@ -201,6 +203,7 @@ public:
     
     void reset() {
         mOmega = 0.0;
+        high_ = false;
     }
     
     double process(double fm_input = 0.0, float * syncin = NULL, float * syncout = NULL) {

@@ -22,8 +22,14 @@ public:
             tick_ = 0;
             increment_ = (target - current) / size;
             size_ = size;
-        } else if(tick_ >= size_) {
+        }
+        else if(current == target) {
             increment_ = 0;
+        } else {
+            target_ = target;
+            tick_ = 0;
+            increment_ = (target - current) / size;
+            size_ = size;
         }
     }
     
