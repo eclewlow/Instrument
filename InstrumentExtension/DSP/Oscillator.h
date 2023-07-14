@@ -142,7 +142,6 @@ public:
             if (mOmega >= 1.0f) {
                 mOmega -= 1.0f;
             }
-
             
             float pulse_width = mSynthParams->pulse_width / 100.0; // 0.5
 //            pulse_width = 0.5;

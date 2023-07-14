@@ -33,7 +33,6 @@
 		2E00903729817D7C00AC58EB /* AudioUnitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E00903529817D7C00AC58EB /* AudioUnitViewController.xib */; };
 		2E00903929817D7C00AC58EB /* ObservableAUParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903829817D7C00AC58EB /* ObservableAUParameter.swift */; };
 		2E00903B29817D7C00AC58EB /* AudioUnitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E00903A29817D7C00AC58EB /* AudioUnitViewController.swift */; };
-		2E09B12629E51E3E001E7ED8 /* Plaits in Resources */ = {isa = PBXBuildFile; fileRef = 2E09B12529E51E3E001E7ED8 /* Plaits */; };
 		2E09B12929F3A036001E7ED8 /* ObservableToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E09B12829F3A036001E7ED8 /* ObservableToggle.swift */; };
 		2E46C040299329BD00014B67 /* Knob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C03D299329BD00014B67 /* Knob.swift */; };
 		2E46C041299329BD00014B67 /* KnobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E46C03E299329BD00014B67 /* KnobView.swift */; };
@@ -104,7 +103,6 @@
 		2E0090AF29832AA900AC58EB /* ADSREnvelope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ADSREnvelope.h; sourceTree = "<group>"; };
 		2E0178EA29849A440095D91E /* Voice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
 		2E0178EB29849A500095D91E /* VoiceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VoiceManager.h; sourceTree = "<group>"; };
-		2E09B12529E51E3E001E7ED8 /* Plaits */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Plaits; sourceTree = "<group>"; };
 		2E09B12729E7DBAF001E7ED8 /* ParameterInterpolator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParameterInterpolator.h; sourceTree = "<group>"; };
 		2E09B12829F3A036001E7ED8 /* ObservableToggle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableToggle.swift; sourceTree = "<group>"; };
 		2E412A5C2997029A0051DEE3 /* SynthParams.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SynthParams.h; sourceTree = "<group>"; };
@@ -114,6 +112,7 @@
 		2E46C04229932ADB00014B67 /* NSBezierPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSBezierPath.swift; sourceTree = "<group>"; };
 		2E46C04329932ADB00014B67 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		2E46C0462993603900014B67 /* ObservableKnob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableKnob.swift; sourceTree = "<group>"; };
+		2E66418F2A6188E500A495A2 /* Filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Filter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -301,7 +300,6 @@
 		2E00902A29817D7C00AC58EB /* DSP */ = {
 			isa = PBXGroup;
 			children = (
-				2E09B12529E51E3E001E7ED8 /* Plaits */,
 				2E46C020298F2C7E00014B67 /* BiquadFilter.h */,
 				2E412A5C2997029A0051DEE3 /* SynthParams.h */,
 				2E00904629818D9A00AC58EB /* Oscillator.h */,
@@ -310,6 +308,7 @@
 				2E0178EA29849A440095D91E /* Voice.h */,
 				2E0178EB29849A500095D91E /* VoiceManager.h */,
 				2E09B12729E7DBAF001E7ED8 /* ParameterInterpolator.h */,
+				2E66418F2A6188E500A495A2 /* Filter.h */,
 			);
 			path = DSP;
 			sourceTree = "<group>";
@@ -446,7 +445,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E00901429817D7C00AC58EB /* README.md in Resources */,
-				2E09B12629E51E3E001E7ED8 /* Plaits in Resources */,
 				2E00903729817D7C00AC58EB /* AudioUnitViewController.xib in Resources */,
 				2E00902529817D7C00AC58EB /* InstrumentExtensionAUProcessHelper.hpp in Resources */,
 				2E00902D29817D7C00AC58EB /* InstrumentExtensionDSPKernel.hpp in Resources */,

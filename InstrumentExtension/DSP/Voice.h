@@ -12,17 +12,19 @@
 #import "Oscillator.h"
 #import "ADSREnvelope.h"
 #import "BiquadFilter.h"
+#import "Filter.h"
 #import "SynthParams.h"
 #import "ParameterInterpolator.h"
 
 class Voice {
 public:
-    Voice(double sampleRate = 44100.0, SynthParams* synthParams={}):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA, synthParams),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF, synthParams), mResonantFilter(sampleRate, synthParams),mResonantFilter2(sampleRate, synthParams){
+    Voice(double sampleRate = 44100.0, SynthParams* synthParams={}):mVCAEnv(ADSREnvelope::ADSR_TYPE_VCA, synthParams),mVCFEnv(ADSREnvelope::ADSR_TYPE_VCF, synthParams), mResonantFilter(sampleRate, synthParams),mResonantFilter2(sampleRate, synthParams), svf(sampleRate, synthParams) {
         mSampleRate = sampleRate;
         mOsc1 =Oscillator(sampleRate, synthParams);
         mOsc2 =Oscillator(sampleRate, synthParams);
         mSynthParams = synthParams;
         fm_frequency = ParameterInterpolator();
+        svf.Init();
     }
     
     inline double Oscillator2MIDINoteToFrequency(double note) {
@@ -115,8 +117,10 @@ public:
         
         float vcfEnvelopeControlVoltage = mVCFEnv.process();
         
-        float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage, mNote);
-        float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage, mNote);
+//        float filterStage1Output = mResonantFilter.process(oscillatorOutput, vcfEnvelopeControlVoltage, mNote);
+//        float filterState2Output = mResonantFilter2.process(filterStage1Output, vcfEnvelopeControlVoltage, mNote);
+        float filterState2Output = svf.Process<FILTER_MODE_LOW_PASS>(oscillatorOutput, vcfEnvelopeControlVoltage, mNote);
+        
         float vcaEnvelopeOutput = mVCAEnv.process() * filterState2Output;
         
         return vcaEnvelopeOutput;
@@ -191,5 +195,6 @@ private:
     ADSREnvelope mVCFEnv;
     BiquadFilter mResonantFilter;
     BiquadFilter mResonantFilter2;
+    Svf svf;
     SynthParams* mSynthParams;
 };
